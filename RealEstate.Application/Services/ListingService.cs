@@ -4,6 +4,7 @@ using RealEstate.Application.Models.PostInputModels;
 using RealEstate.Domain.Entities;
 using RealEstate.Domain.Interfaces;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Hosting;
 
 namespace RealEstate.Application.Services
 {
@@ -20,7 +21,7 @@ namespace RealEstate.Application.Services
             throw new NotImplementedException();
         }
 
-        public async Task<bool> DeleteListingAsync(Guid id)
+        public async Task<bool> DeleteListingAsync(Guid id, string webRootPath)
         {
             if (id == Guid.Empty)
             {
@@ -32,6 +33,29 @@ namespace RealEstate.Application.Services
             if (listingToBeDeleted == null)
             {
                 return false;
+            }
+
+            // Delete images
+            foreach (var relativePath in listingToBeDeleted.Images)
+            {
+                if (string.IsNullOrWhiteSpace(relativePath.ImageUrl)) continue;
+
+                try
+                {
+                    var cleanedPath = relativePath.ImageUrl.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString());
+                    // Combine wwwroot with the stored path (e.g., "uploads/image.jpg")
+                    var fullPath = Path.Combine(webRootPath, cleanedPath);
+
+                    if (System.IO.File.Exists(fullPath))
+                    {
+                        System.IO.File.Delete(fullPath);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Optional: log error or handle it
+                    // _logger.LogError(ex, $"Could not delete file: {relativePath}");
+                }
             }
 
             db.Listings.Remove(listingToBeDeleted);

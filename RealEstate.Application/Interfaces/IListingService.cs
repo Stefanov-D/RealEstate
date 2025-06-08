@@ -18,6 +18,6 @@ namespace RealEstate.Domain.Interfaces
 
         Task<bool> UpdateListingAsync(UpdateListingInputModel inputModel, Listing listingToUpdate);
 
-        Task<bool> DeleteListingAsync(Guid id);
+        Task<bool> DeleteListingAsync(Guid id, string WebRootPath);
     }
 }
