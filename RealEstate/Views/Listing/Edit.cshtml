@@ -2,7 +2,7 @@
 @model UpdateListingInputModel
 
 @{
-    ViewData["Title"] = "Create New Enquiry";
+    ViewData["Title"] = "Edit Listing";
 }
 
 <style>
@@ -51,11 +51,8 @@
             <div class="card shadow-sm border-0">
                 <div class="card-body">
                     <h1 class="card-title text-center text-primary mb-4">
-                        Create a New Enquiry
+                        Edit Listing
                     </h1>
-                    <p class="text-muted text-center">
-                        Fill in the details below and our agents will contact you as soon as possible.
-                    </p>
 
                     <form asp-action="Edit" method="post" enctype="multipart/form-data" id="listingForm">
                         @* <input type="hidden" asp-for="Id" /> *@

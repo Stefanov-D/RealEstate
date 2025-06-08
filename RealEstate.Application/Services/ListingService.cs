@@ -20,9 +20,25 @@ namespace RealEstate.Application.Services
             throw new NotImplementedException();
         }
 
-        public Task<bool> DeleteListingAsync(Guid id)
+        public async Task<bool> DeleteListingAsync(Guid id)
         {
-            throw new NotImplementedException();
+            if (id == Guid.Empty)
+            {
+                return false;
+            }
+
+            Listing? listingToBeDeleted = await GetListingByIdAsync(id);
+
+            if (listingToBeDeleted == null)
+            {
+                return false;
+            }
+
+            db.Listings.Remove(listingToBeDeleted);
+
+            await db.SaveChangesAsync();
+
+            return true;
         }
 
         public async Task<List<ListingViewModel>> GetAllForSaleListingViewModelsAsync()

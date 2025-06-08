@@ -19,7 +19,7 @@ namespace RealEstate.Controllers
 
         public async Task<IActionResult> Create()
         {
-            ViewBag.PropertyTypes = new SelectList(await this._db.Categories.ToListAsync(), "Id", "Name");
+            ViewBag.Categories = new SelectList(await this._db.Categories.ToListAsync(), "Id", "Name");
             ViewBag.ListingTypes = new SelectList(await this._db.ListingTypes.Where(t => t.Name != "Buy").OrderBy(t => t.Id).ToListAsync(), "Id", "Name");
 
             var model = new CreateListingInputModel
@@ -65,7 +65,7 @@ namespace RealEstate.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.PropertyTypes = new SelectList(await _db.Categories.ToListAsync(), "Id", "Name");
+                ViewBag.Categories = new SelectList(await _db.Categories.ToListAsync(), "Id", "Name");
                 ViewBag.ListingTypes = new SelectList(await _db.ListingTypes.Where(t => t.Name != "Buy").OrderBy(t => t.Id).ToListAsync(), "Id", "Name");
 
                 // Make sure this is not null to avoid runtime errors in the view
