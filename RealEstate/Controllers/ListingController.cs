@@ -13,10 +13,12 @@ namespace RealEstate.Controllers
     {
         readonly IListingService propertyService;
         private readonly ApplicationDbContext db;
-        public ListingController(IListingService service,ApplicationDbContext context)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public ListingController(IListingService service,ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
         {
             propertyService = service;
             db = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public IListingService PropertyService => propertyService;
@@ -109,14 +111,14 @@ namespace RealEstate.Controllers
             return View(inputModel);
         }
 
-
+        [HttpPost]
         public async Task<IActionResult> Delete(Guid id)
         {
-            bool isDeleted = await propertyService.DeleteListingAsync(id);
+            bool isDeleted = await propertyService.DeleteListingAsync(id, _webHostEnvironment.WebRootPath);
 
             if (!isDeleted)
             {
-                RedirectToAction("ListingDetails");
+                return View("ListingDetails", id);
             }
 
             return View("DeletedSuccess");
