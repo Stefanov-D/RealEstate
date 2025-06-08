@@ -132,7 +132,7 @@ namespace RealEstate.Application.Services
             if (!isValid)
                 return false;
 
-            // Step 1: Update listing fields except images
+            // Step 1: Update listing fields
             listingToUpdate.Title = obj.Title;
             listingToUpdate.Price = obj.Price;
             listingToUpdate.Description = obj.Description;
@@ -142,7 +142,6 @@ namespace RealEstate.Application.Services
             listingToUpdate.CategoryId = obj.CategoryId;
             listingToUpdate.ListingTypeId = obj.ListingTypeId;
 
-            // Save listing first to reduce concurrency conflicts later
             try
             {
                 await db.SaveChangesAsync();
@@ -153,21 +152,51 @@ namespace RealEstate.Application.Services
                 return false;
             }
 
-            // Step 2: Sync images
-            var currentPaths = listingToUpdate.Images.Select(i => i.ImageUrl).ToList();
-            var newPaths = obj.UploadedImagePaths ?? new List<string>();
+            // Step 2: Move image files from temp to permanent folder and build new URLs
+            var wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            var tempPath = Path.Combine(wwwrootPath, "uploads", "temp");
+            var permanentPath = Path.Combine(wwwrootPath, "uploads", "properties");
 
-            // Remove images no longer in the updated list
-            var imagesToRemove = listingToUpdate.Images.Where(i => !newPaths.Contains(i.ImageUrl)).ToList();
+            if (!Directory.Exists(permanentPath))
+                Directory.CreateDirectory(permanentPath);
+
+            var resolvedImagePaths = new List<string>();
+
+            foreach (var tempUrl in obj.UploadedImagePaths ?? new List<string>())
+            {
+                var fileName = Path.GetFileName(tempUrl);
+                var tempFile = Path.Combine(tempPath, fileName);
+                var newFile = Path.Combine(permanentPath, fileName);
+                var newUrl = "/uploads/properties/" + fileName;
+
+                try
+                {
+                    if (System.IO.File.Exists(tempFile))
+                    {
+                        System.IO.File.Move(tempFile, newFile);
+                    }
+                    resolvedImagePaths.Add(newUrl);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error moving image: {ex.Message}");
+                    return false;
+                }
+            }
+
+            // Step 3: Sync image records in DB
+
+            // Remove images no longer in the new list
+            var imagesToRemove = listingToUpdate.Images.Where(i => !resolvedImagePaths.Contains(i.ImageUrl)).ToList();
             foreach (var image in imagesToRemove)
             {
                 listingToUpdate.Images.Remove(image);
                 db.Images.Remove(image);
             }
 
-            // Add new images
+            // Add new images not already in DB
             var existingPaths = listingToUpdate.Images.Select(i => i.ImageUrl).ToHashSet();
-            var imagesToAdd = newPaths.Where(p => !existingPaths.Contains(p));
+            var imagesToAdd = resolvedImagePaths.Where(p => !existingPaths.Contains(p));
 
             foreach (var path in imagesToAdd)
             {
@@ -178,11 +207,10 @@ namespace RealEstate.Application.Services
                     IsPrimary = false
                 };
                 listingToUpdate.Images.Add(newImage);
-                db.Images.Add(newImage); // <-- important to add to DbContext
+                db.Images.Add(newImage);
             }
 
-            // Ensure only the first image is marked as primary
-            // Set only one image as primary
+            // Mark only the first image as primary
             bool primarySet = false;
             foreach (var img in listingToUpdate.Images)
             {
@@ -209,5 +237,6 @@ namespace RealEstate.Application.Services
 
             return true;
         }
+
     }
 }

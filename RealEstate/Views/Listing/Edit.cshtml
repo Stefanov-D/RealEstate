@@ -58,7 +58,7 @@
                     </p>
 
                     <form asp-action="Edit" method="post" enctype="multipart/form-data" id="listingForm">
-                        @* <input type="hidden" asp-for="Id" / *@>
+                        @* <input type="hidden" asp-for="Id" /> *@
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                         <div class="mb-3">
@@ -154,12 +154,14 @@
                 const previewContainer = document.getElementById('previewContainer');
                 const form = document.getElementById('listingForm');
 
+                // Deserialize existing uploaded images (if any)
                 let uploadedPaths = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.UploadedImagePaths ?? new List<string>()));
 
                 function updateHiddenInputs() {
-                    // Clear old ones
+                    // Remove old hidden inputs
                     document.querySelectorAll('input[name^="UploadedImagePaths"]').forEach(el => el.remove());
 
+                    // Add hidden inputs for each uploaded image path
                     uploadedPaths.forEach((path, index) => {
                         const hiddenInput = document.createElement('input');
                         hiddenInput.type = 'hidden';
@@ -179,11 +181,13 @@
                         const img = document.createElement('img');
                         img.src = path;
                         img.className = 'preview-img';
+                        img.alt = "Uploaded Image";
 
                         const btn = document.createElement('button');
                         btn.type = 'button';
                         btn.className = 'btn-close';
                         btn.innerText = '×';
+                        btn.title = "Remove image";
                         btn.onclick = () => {
                             uploadedPaths = uploadedPaths.filter(p => p !== path);
                             updateHiddenInputs();
@@ -206,7 +210,7 @@
                     }
 
                     try {
-                        const response = await fetch('/Sell/UploadTempImage', {
+                        const response = await fetch('/Listing/UploadTempImage', {
                             method: 'POST',
                             body: formData
                         });
@@ -219,10 +223,11 @@
                         const data = await response.json();
 
                         if (data.success) {
+                            // Append new paths returned by server
                             uploadedPaths = uploadedPaths.concat(data.paths);
                             updateHiddenInputs();
                             renderExistingImages();
-                            input.value = '';
+                            input.value = ''; // Reset input so user can re-upload same files if needed
                         } else {
                             alert('Image upload failed on server. Please try again.');
                         }
@@ -233,10 +238,10 @@
                 });
 
                 form.addEventListener('submit', () => {
-                    updateHiddenInputs(); // Ensure latest before submit
+                    updateHiddenInputs(); // Make sure hidden inputs are up to date before submit
                 });
 
-                // Initialize on page load
+                // Initialize preview on page load if any images exist
                 updateHiddenInputs();
                 renderExistingImages();
             });
