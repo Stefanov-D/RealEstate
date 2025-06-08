@@ -1,0 +1,306 @@
+﻿@using RealEstate.Application.Models.PostInputModels
+@using Microsoft.AspNetCore.Identity
+@model ListingDetailsViewModel
+
+@{
+	ViewData["Title"] = "Property List";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" rel="stylesheet" />
+
+<style>
+	.section-box {
+		background: linear-gradient(to bottom, #f3fdff, #d1f7ff);
+		border-radius: 5px;
+		padding: 5px;
+		/* margin-bottom: 10px; */
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+		opacity: 0;
+		animation-fill-mode: forwards;
+	}
+
+	.slide-in-right {
+		animation: slideInFromRight 0.6s ease-out forwards;
+	}
+
+	.slide-in-left {
+		animation: slideInFromLeft 0.6s ease-out forwards;
+	}
+
+	.slide-in-bottom {
+		animation: slideInFromBottom 0.6s ease-out forwards;
+	}
+
+	@@keyframes slideInFromRight {
+		0% {
+			opacity: 0;
+			transform: translateX(100px);
+			filter: blur(4px);
+		}
+
+		100% {
+			opacity: 1;
+			transform: translateX(0);
+			filter: blur(0);
+		}
+	}
+
+	@@keyframes slideInFromLeft {
+		0% {
+			opacity: 0;
+			transform: translateX(-100px);
+			filter: blur(4px);
+		}
+
+		100% {
+			opacity: 1;
+			transform: translateX(0);
+			filter: blur(0);
+		}
+	}
+
+	@@keyframes slideInFromBottom {
+		0% {
+			opacity: 0;
+			transform: translateY(40px);
+			filter: blur(4px);
+		}
+
+		100% {
+			opacity: 1;
+			transform: translateY(0);
+			filter: blur(0);
+		}
+	}
+
+	.image-gallery-container {
+		display: flex;
+		flex-direction: column;
+		gap: 1px;
+		align-items: center;
+		width: 100%;
+	}
+
+	.main-image-container {
+		width: 100%;
+		overflow: hidden;
+		border-radius: 1px;
+		position: relative;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 400px;
+	}
+
+	.main-image {
+		width: 100%;
+		height: 100%;
+		min-height: 500px;
+		max-height: 500px;
+		object-fit: contain;
+		border-radius: 2px;
+		cursor: zoom-in;
+		transition: opacity 0.3s ease-in-out;
+	}
+
+	.thumbnail-scroll-wrapper {
+		display: flex;
+		justify-content: center;
+		overflow-x: auto;
+		width: 100%;
+		scrollbar-width: none;
+	}
+
+		.thumbnail-scroll-wrapper::-webkit-scrollbar {
+			display: none;
+		}
+
+	.thumbnail-container {
+		display: flex;
+		gap: 5px;
+		padding: 5px 0;
+		max-width: 100%;
+	}
+
+	.thumbnail-image {
+		width: 100%;
+		height: 100%;
+		min-height: 90px;
+		max-height: 90px;
+		object-fit: fill;
+		border-radius: 2px;
+		cursor: pointer;
+		border: 2px solid transparent;
+		transition: border-color 0.3s ease;
+	}
+
+		.thumbnail-image:hover,
+		.thumbnail-image.active {
+			border-color: #0d6efd;
+		}
+
+	.full-page-listing {
+		max-width: 1140px;
+		margin: 0 auto;
+		padding: 30px 15px;
+	}
+</style>
+
+<div class="full-page-listing">
+	<div class="row gx-4 gy-3">
+
+		<!-- LEFT COLUMN: IMAGES FIRST, EXTRA SECOND ON MOBILE -->
+		<div class="col-lg-6 d-flex flex-column">
+			<!-- IMAGE SECTION: ORDER 1 ON MOBILE -->
+			<div class="section-box slide-in-left mb-3 order-1 order-lg-1">
+				@if (Model.Images != null && Model.Images.Any())
+				{
+					<div class="image-gallery-container">
+						<div id="propertyCarousel-@Model.Id" class="carousel slide main-image-container" data-bs-ride="carousel">
+							<div class="carousel-inner">
+								@for (int i = 0; i < Model.Images.Count; i++)
+								{
+									<div class="carousel-item @(i == 0 ? "active" : "")">
+										<a href="@Url.Content(Model.Images[i])" class="glightbox" data-gallery="gallery-@Model.Id" data-title="@Model.Title">
+											<img src="@Url.Content(Model.Images[i])" class="main-image" alt="Property Image @i" />
+										</a>
+									</div>
+								}
+							</div>
+							<button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel-@Model.Id" data-bs-slide="prev">
+								<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+								<span class="visually-hidden">Previous</span>
+							</button>
+							<button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel-@Model.Id" data-bs-slide="next">
+								<span class="carousel-control-next-icon" aria-hidden="true"></span>
+								<span class="visually-hidden">Next</span>
+							</button>
+						</div>
+
+						<div class="thumbnail-scroll-wrapper">
+							<div class="thumbnail-container">
+								@for (int i = 0; i < Model.Images.Count; i++)
+								{
+									<img src="@Url.Content(Model.Images[i])"
+										 class="thumbnail-image @(i == 0 ? "active" : "")"
+										 data-bs-target="#propertyCarousel-@Model.Id"
+										 data-bs-slide-to="@i"
+										 alt="Thumbnail @i" />
+								}
+							</div>
+						</div>
+					</div>
+				}
+				else
+				{
+					<h1>No images available</h1>
+				}
+			</div>
+
+			<!-- EXTRA SECTION: ORDER 3 ON MOBILE -->
+			<div class="section-box slide-in-bottom mt-2 order-3 order-lg-2">
+				<h5>Additional Details</h5>
+				<p>This section is for extra listing information such as agent contact, features, or documents.</p>
+
+
+			</div>
+		</div>
+
+		<!-- RIGHT COLUMN: TEXT -->
+		<div class="col-lg-6 order-2">
+			<!-- Main text section -->
+			<div class="section-box slide-in-right">
+				<div class="d-flex justify-content-between align-items-center mb-3">
+					<h3 class="mb-0">@Model.Title</h3>
+					<h4 class="mb-0 text-success">@Model.Price.ToString("N2")$</h4>
+				</div>
+				<hr />
+				<!-- NEW BUTTON SECTION -->
+				<div class="d-flex justify-content-between align-items-center mb-1">
+					<ul class="list-unstyled">
+						<li><strong>Category:</strong> @Model.Category</li>
+					</ul>
+					@if (User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("Agent")))
+					{
+						<div class="action-buttons">
+							<!-- Edit Button (GET Request) -->
+							<a asp-controller="Listing" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+								Edit
+							</a>
+
+							<!-- Delete Button (POST Request via form) -->
+							<form asp-controller="Listing" asp-action="Delete" asp-route-id="@Model.Id" method="post" style="display:inline;">
+								<button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this listing?');">
+									Delete
+								</button>
+							</form>
+						</div>
+					}
+				</div>
+
+				@for (int i = 0; i < 50; i++)
+				{
+					<p class="mt-3">@Model.Description</p>
+				}
+			</div>
+		</div>
+
+
+	</div>
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+
+@section Scripts {
+	<script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+	<script>
+				document.addEventListener('DOMContentLoaded', function () {
+					GLightbox({
+						selector: '.glightbox',
+						touchNavigation: true,
+						loop: true,
+						zoomable: true,
+						autoplayVideos: false,
+						thumbnails: true,
+					});
+
+					document.querySelectorAll('.carousel').forEach(carousel => {
+						const id = carousel.id;
+						const thumbs = document.querySelectorAll(`.thumbnail-container img[data-bs-target="#${id}"]`);
+
+								carousel.addEventListener('slid.bs.carousel', function (e) {
+					const activeIndex = e.to;
+					thumbs.forEach(t => t.classList.remove('active'));
+
+					if (thumbs[activeIndex]) {
+						const activeThumb = thumbs[activeIndex];
+						activeThumb.classList.add('active');
+
+						// Scroll manually within the thumbnail wrapper without affecting page scroll
+						const scrollWrapper = activeThumb.closest('.thumbnail-scroll-wrapper');
+						const wrapperRect = scrollWrapper.getBoundingClientRect();
+						const thumbRect = activeThumb.getBoundingClientRect();
+
+						// Calculate the scroll offset
+						const offset = thumbRect.left - wrapperRect.left - (wrapperRect.width / 2) + (thumbRect.width / 2);
+						scrollWrapper.scrollBy({
+			left: offset,
+			behavior: 'smooth'
+		});
+					}
+				});
+
+						thumbs.forEach((thumb, index) => {
+							thumb.addEventListener('click', function () {
+								thumbs.forEach(t => t.classList.remove('active'));
+								this.classList.add('active');
+								const bsCarousel = bootstrap.Carousel.getInstance(carousel);
+								if (bsCarousel) bsCarousel.to(index);
+							});
+						});
+					});
+				});
+	</script>
+}

@@ -1,0 +1,86 @@
+## Build output
+bin/
+obj/
+
+## Uploaded temp or media files
+wwwroot/uploads/
+wwwroot/uploads/temp/
+
+## Rider
+.idea/
+
+## Visual Studio
+.vs/
+*.user
+*.suo
+*.cache
+*.ilk
+*.pdb
+*.idb
+*.ipdb
+*.log
+*.obj
+
+## OS generated files
+.DS_Store
+Thumbs.db
+
+## ASP.NET Secrets (development only)
+secrets.json
+
+## Configuration files that might contain sensitive info
+appsettings.Production.json
+appsettings.*.json
+!appsettings.json
+
+## Node modules (if using front-end tooling)
+node_modules/
+
+## Logs
+*.log
+logs/
+*.trace
+*.tlog
+
+## Publish output
+publish/
+publish_output/
+
+## Database files (do NOT commit these)
+*.mdf
+*.ldf
+*.sqlite
+*.db
+*.db-journal
+*.bak
+
+## Entity Framework Migrations (optional: exclude if you don’t want migrations in repo)
+RealEstate.Infrastructure/Migrations/
+
+## Backup files
+*.bak
+*.backup
+
+## Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+
+## NuGet packages
+*.nupkg
+packages/
+
+## Visual Studio Code settings (if you use VSCode)
+.vscode/
+
+## Others
+*.vsix
+*.psess
+*.vsp
+*.vspx
+*.suo
+
+## User-specific files
+*.userosscache
+*.sln.docstates

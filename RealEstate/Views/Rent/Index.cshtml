@@ -1,0 +1,267 @@
+﻿@using RealEstate.Application.Models.PostInputModels
+@model List<ListingViewModel>
+
+@{
+	ViewData["Title"] = "Property List";
+}
+
+<!-- GLightbox CSS -->
+<link href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" rel="stylesheet" />
+
+<style>
+	/* Animation Keyframes */
+	@@keyframes slideFadeIn {
+		0% {
+			opacity: 0;
+			transform: translateX(100px);
+			filter: blur(5px);
+		}
+
+		100% {
+			opacity: 1;
+			transform: translateX(0);
+			filter: blur(0);
+		}
+	}
+
+	.animated-slide {
+		opacity: 0;
+	}
+
+	.property-animated {
+		animation: slideFadeIn 0.6s ease forwards;
+	}
+
+	.image-gallery-container {
+		display: flex;
+		flex-direction: row;
+		gap: 5px;
+		align-items: flex-start;
+		justify-content: center;
+		width: 100%;
+		height: 210px;
+		margin: 0 auto;
+	}
+
+	.main-image-container {
+		width: 300px;
+		height: 280px;
+		position: relative;
+		flex-shrink: 0;
+		overflow: hidden;
+	}
+
+	.main-image {
+		width: 100%;
+		height: 210px;
+		object-fit: cover;
+		display: block;
+		margin: 0;
+		padding: 0;
+		border-radius: 10px;
+		cursor: zoom-in;
+	}
+
+	.thumbnail-container {
+		display: flex;
+		flex-direction: column;
+		gap: 1px;
+		margin-top: 0;
+		align-items: center;
+	}
+
+	.thumbnail-image {
+		width: 69.5px;
+		height: 69.5px;
+		object-fit: cover;
+		border-radius: 4px;
+		cursor: pointer;
+		border: 2px solid transparent;
+		transition: border-color 0.3s ease;
+	}
+
+		.thumbnail-image:hover,
+		.thumbnail-image.active {
+			border-color: #0d6efd;
+		}
+
+	.property-wrapper {
+		background: linear-gradient(to bottom, #f3fdff, #d1f7ff);
+		border-radius: 10px;
+		margin-bottom: 10px;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+	}
+
+	.property-container {
+		overflow: hidden;
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.clickable-post {
+		cursor: pointer;
+		transition: transform 0.3s ease, box-shadow 0.3s ease;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+
+		.clickable-post:hover {
+			transform: scale(1.02);
+			box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+		}
+
+	.carousel-control-prev,
+	.carousel-control-next {
+		top: 38%;
+		transform: translateY(-50%);
+		bottom: auto;
+		height: 40px;
+		width: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		opacity: 0.7;
+	}
+
+	.carousel-control-prev-icon,
+	.carousel-control-next-icon {
+		background-size: 100% 100%;
+	}
+</style>
+
+<div class="container mt-3">
+	@for (int i = 0; i < Model.Count; i++)
+	{
+		var p = Model[i];
+		<div class="property-wrapper animated-slide" data-index="@i">
+			<div class="row property-wrapper mb-4 clickable-post" data-url="@Url.Action("ListingDetails", "Rent", new { id = p.Id })">
+				<div class="col-md-4 property-container">
+					@if (p.Images != null && p.Images.Any())
+					{
+						<div class="image-gallery-container">
+							<div id="propertyCarousel-@p.Id" class="carousel slide main-image-container" data-bs-ride="carousel" data-bs-interval="false">
+								<div class="carousel-inner">
+									@for (int j = 0; j < p.Images.Count; j++)
+									{
+										<div class="carousel-item @(j == 0 ? "active" : "")">
+											<a href="@Url.Content(p.Images[j])" class="glightbox" data-gallery="gallery-@p.Id" data-title="@p.Title">
+												<img src="@Url.Content(p.Images[j])" class="main-image" alt="Property Image @j" />
+											</a>
+										</div>
+									}
+								</div>
+								<button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel-@p.Id" data-bs-slide="prev">
+									<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+									<span class="visually-hidden">Previous</span>
+								</button>
+								<button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel-@p.Id" data-bs-slide="next">
+									<span class="carousel-control-next-icon" aria-hidden="true"></span>
+									<span class="visually-hidden">Next</span>
+								</button>
+							</div>
+
+							<div class="thumbnail-container">
+								@for (int j = 0; j < p.Images.Count; j++)
+								{
+									<img src="@Url.Content(p.Images[j])"
+										 class="thumbnail-image img-thumbnail @(j == 0 ? "active" : "")"
+										 data-bs-target="#propertyCarousel-@p.Id"
+										 data-bs-slide-to="@j"
+										 alt="Thumbnail @j" />
+								}
+							</div>
+						</div>
+					}
+					else
+					{
+						<p>No images available</p>
+					}
+				</div>
+
+				<div class="col-md-7 property-container">
+					<div class="d-flex justify-content-between align-items-center mb-2">
+						<h3 class="mb-0">@p.Title</h3>
+						<h4 class="mb-0 text-success">@p.Price.ToString("N2")$</h4>
+					</div>
+					<hr style="margin-top: 0px; margin-bottom: 10px;" />
+					<ul class="list-unstyled">
+						<li><strong>Category:</strong> @p.Category</li>
+					</ul>
+					<p class="mt-3">@p.Description</p>
+				</div>
+			</div>
+		</div>
+	}
+</div>
+
+<!-- GLightbox JS -->
+<script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+
+@section Scripts {
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			// GLightbox init
+			GLightbox({
+				selector: '.glightbox',
+				touchNavigation: true,
+				loop: true,
+				zoomable: true,
+				autoplayVideos: false,
+				thumbnails: true,
+			});
+
+			// Clickable post logic
+			document.querySelectorAll('.clickable-post').forEach(post => {
+				post.addEventListener('click', function (e) {
+					const target = e.target;
+
+					if (
+						target.closest('a') ||
+						target.closest('.glightbox') ||
+						target.closest('.thumbnail-container') ||
+						target.closest('.carousel-control-prev') ||
+						target.closest('.carousel-control-next')
+					) {
+						return;
+					}
+
+					const url = this.dataset.url;
+					if (url) {
+						window.open(url, '_blank');
+					}
+				});
+			});
+
+			// Thumbnail active class update
+			var carousels = document.querySelectorAll('.carousel');
+			carousels.forEach(carousel => {
+				var carouselId = carousel.id;
+				var thumbnails = document.querySelectorAll(`.thumbnail-container img[data-bs-target="#${carouselId}"]`);
+
+				carousel.addEventListener('slid.bs.carousel', function (e) {
+					thumbnails.forEach(t => t.classList.remove('active'));
+					var index = e.to;
+					if (thumbnails[index]) {
+						thumbnails[index].classList.add('active');
+					}
+				});
+
+				thumbnails.forEach(thumb => {
+					thumb.addEventListener('click', function () {
+						thumbnails.forEach(t => t.classList.remove('active'));
+						this.classList.add('active');
+					});
+				});
+			});
+
+			// Apply staggered animation
+			const animatedElements = document.querySelectorAll('.animated-slide');
+			animatedElements.forEach((el, index) => {
+				setTimeout(() => {
+					el.classList.add('property-animated');
+				}, index * 200); // Staggered delay: 200ms per item
+			});
+		});
+	</script>
+}

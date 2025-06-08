@@ -1,0 +1,245 @@
+﻿@using RealEstate.Application.Models.PostInputModels
+@model UpdateListingInputModel
+
+@{
+    ViewData["Title"] = "Create New Enquiry";
+}
+
+<style>
+    .card {
+        background: linear-gradient(to bottom, #f3fdff, #d1f7ff);
+        border-radius: 10px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        margin: 0 auto;
+        max-width: 100%;
+    }
+
+    .preview-img {
+        height: 80px;
+        object-fit: cover;
+        border-radius: 6px;
+        margin: 5px;
+    }
+
+    .image-wrapper {
+        position: relative;
+        display: inline-block;
+        margin: 5px;
+    }
+
+    .btn-close {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        background: rgba(255,255,255,0.8);
+        border-radius: 50%;
+        border: none;
+        font-weight: bold;
+        cursor: pointer;
+        width: 22px;
+        height: 22px;
+        line-height: 18px;
+        padding: 0;
+        text-align: center;
+    }
+</style>
+
+<div class="container mt-1">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h1 class="card-title text-center text-primary mb-4">
+                        Create a New Enquiry
+                    </h1>
+                    <p class="text-muted text-center">
+                        Fill in the details below and our agents will contact you as soon as possible.
+                    </p>
+
+                    <form asp-action="Edit" method="post" enctype="multipart/form-data" id="listingForm">
+                        @* <input type="hidden" asp-for="Id" / *@>
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label">Title</label>
+                            <input asp-for="Title" class="form-control" placeholder="e.g., Spacious Family Home" />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Price" class="form-label">Price</label>
+                            <input asp-for="Price" type="number" class="form-control" placeholder="e.g., 350000" />
+                            <span asp-validation-for="Price" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Street" class="form-label">Street</label>
+                            <input asp-for="Street" class="form-control auto-resize" placeholder="Address street name and number..." />
+                            <span asp-validation-for="Street" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="City" class="form-label">City</label>
+                            <input asp-for="City" class="form-control auto-resize" placeholder="City..." />
+                            <span asp-validation-for="City" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ZipCode" class="form-label">ZipCode</label>
+                            <input asp-for="ZipCode" class="form-control auto-resize" placeholder="ZipCode..." />
+                            <span asp-validation-for="ZipCode" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Property Description</label>
+                            <textarea asp-for="Description" class="form-control auto-resize" rows="4" placeholder="Brief description of the Listing..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-3">
+                                <label asp-for="Category" class="form-label"></label>
+                                <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.Categories">
+                                    <option value="">-- Select --</option>
+                                </select>
+                                <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12 col-md-6 mb-3">
+                                <label asp-for="ListingType" class="form-label"></label>
+                                <select asp-for="ListingTypeId" class="form-select" asp-items="ViewBag.ListingTypes">
+                                    <option value="">-- Select --</option>
+                                </select>
+                                <span asp-validation-for="ListingTypeId" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Image Upload Section -->
+                        <div class="mb-3">
+                            <label class="form-label">Upload Listing Images</label>
+                            <input type="file" id="imageUpload" multiple class="form-control" />
+                            <div id="previewContainer" class="d-flex flex-wrap gap-2 mt-2"></div>
+                        </div>
+
+                        <div class="d-flex justify-content-center">
+                            <button type="submit" class="btn btn-primary px-4">
+                                Submit Enquiry
+                            </button>
+                        </div>
+                        <div class="mb-3">
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-primary">
+                                ← Back to Homepage
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // Auto-resize textarea
+                document.querySelectorAll('.auto-resize').forEach(textarea => {
+                    textarea.style.height = textarea.scrollHeight + 'px';
+                    textarea.addEventListener('input', function () {
+                        this.style.height = 'auto';
+                        this.style.height = this.scrollHeight + 'px';
+                    });
+                });
+
+                const input = document.getElementById('imageUpload');
+                const previewContainer = document.getElementById('previewContainer');
+                const form = document.getElementById('listingForm');
+
+                let uploadedPaths = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.UploadedImagePaths ?? new List<string>()));
+
+                function updateHiddenInputs() {
+                    // Clear old ones
+                    document.querySelectorAll('input[name^="UploadedImagePaths"]').forEach(el => el.remove());
+
+                    uploadedPaths.forEach((path, index) => {
+                        const hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = `UploadedImagePaths[${index}]`;
+                        hiddenInput.value = path;
+                        form.appendChild(hiddenInput);
+                    });
+                }
+
+                function renderExistingImages() {
+                    previewContainer.innerHTML = '';
+
+                    uploadedPaths.forEach(path => {
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'image-wrapper';
+
+                        const img = document.createElement('img');
+                        img.src = path;
+                        img.className = 'preview-img';
+
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.className = 'btn-close';
+                        btn.innerText = '×';
+                        btn.onclick = () => {
+                            uploadedPaths = uploadedPaths.filter(p => p !== path);
+                            updateHiddenInputs();
+                            renderExistingImages();
+                        };
+
+                        wrapper.appendChild(img);
+                        wrapper.appendChild(btn);
+                        previewContainer.appendChild(wrapper);
+                    });
+                }
+
+                input.addEventListener('change', async () => {
+                    const files = input.files;
+                    if (!files.length) return;
+
+                    const formData = new FormData();
+                    for (const file of files) {
+                        formData.append("images", file);
+                    }
+
+                    try {
+                        const response = await fetch('/Sell/UploadTempImage', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        if (!response.ok) {
+                            alert('Image upload failed. Please try again.');
+                            return;
+                        }
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            uploadedPaths = uploadedPaths.concat(data.paths);
+                            updateHiddenInputs();
+                            renderExistingImages();
+                            input.value = '';
+                        } else {
+                            alert('Image upload failed on server. Please try again.');
+                        }
+                    } catch (error) {
+                        alert('An error occurred while uploading images.');
+                        console.error(error);
+                    }
+                });
+
+                form.addEventListener('submit', () => {
+                    updateHiddenInputs(); // Ensure latest before submit
+                });
+
+                // Initialize on page load
+                updateHiddenInputs();
+                renderExistingImages();
+            });
+        </script>
+    }
+</div>
