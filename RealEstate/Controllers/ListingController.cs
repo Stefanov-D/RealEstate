@@ -112,9 +112,14 @@ namespace RealEstate.Controllers
 
         public async Task<IActionResult> Delete(Guid id)
         {
-            var listing = await propertyService.GetListingViewModelByIdAsync(id);
+            bool isDeleted = await propertyService.DeleteListingAsync(id);
 
-            return View();
+            if (!isDeleted)
+            {
+                RedirectToAction("ListingDetails");
+            }
+
+            return View("DeletedSuccess");
         }
 
         [HttpPost]
