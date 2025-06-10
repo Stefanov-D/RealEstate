@@ -242,6 +242,28 @@
                 updateHiddenInputs();
                 renderExistingImages();
             });
+
+            document.addEventListener("DOMContentLoaded", function () {
+              var successMessage = '@TempData["SuccessMessage"]';
+              if (successMessage && successMessage.trim().length > 0) {
+                var toastEl = document.getElementById('successToast');
+                var toast = new bootstrap.Toast(toastEl);
+                toast.show();
+              }
+            });
         </script>
     }
+</div>
+<div aria-live="polite" aria-atomic="true"
+     class="position-fixed end-0 me-3"
+     style="top: 70px; z-index: 1080; width: 300px;">
+    <div class="toast bg-success text-white" id="successToast" data-bs-delay="3000">
+        <div class="toast-header bg-success text-white">
+            <strong class="me-auto">Success</strong>
+            <!-- Close button removed -->
+        </div>
+        <div class="toast-body">
+            @TempData["SuccessMessage"]
+        </div>
+    </div>
 </div>

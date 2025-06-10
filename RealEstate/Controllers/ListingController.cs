@@ -108,6 +108,8 @@ namespace RealEstate.Controllers
                 UploadedImagePaths = updatedListing.Images // <-- Make sure this is populated with the image URLs!
             };
 
+            TempData["SuccessMessage"] = "Listing successfully updated!";
+
             return View(inputModel);
         }
 

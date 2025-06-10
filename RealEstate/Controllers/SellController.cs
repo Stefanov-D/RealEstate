@@ -17,7 +17,7 @@ namespace RealEstate.Controllers
             /*this._logger = logger;*/
         }
 
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> CreateEnquiry()
         {
             ViewBag.Categories = new SelectList(await this._db.Categories.ToListAsync(), "Id", "Name");
             ViewBag.ListingTypes = new SelectList(await this._db.ListingTypes.Where(t => t.Name != "Buy").OrderBy(t => t.Id).ToListAsync(), "Id", "Name");
@@ -61,7 +61,7 @@ namespace RealEstate.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateListingInputModel obj)
+        public async Task<IActionResult> CreateEnquiry(CreateListingInputModel obj)
         {
             if (!ModelState.IsValid)
             {
@@ -121,7 +121,7 @@ namespace RealEstate.Controllers
                 {
                     // Optionally: log and skip or rethrow
                     ModelState.AddModelError("", "Error processing images. Please try again.");
-                    return View(nameof(Create), obj);
+                    return View(nameof(CreateEnquiry), obj);
                 }
             }
 
@@ -129,7 +129,9 @@ namespace RealEstate.Controllers
             _db.Listings.Add(property);
             await _db.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Create));
+            TempData["SuccessMessage"] = "Your enquiry has been successfully submitted!";
+
+            return RedirectToAction(nameof(CreateEnquiry));
         }
     }
 }
