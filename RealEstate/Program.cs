@@ -1,8 +1,5 @@
 using RealEstate.Application;
 using RealEstate.Infrastructure;
-using RealEstate.Infrastructure.Data.Seeding;
-using RealEstate.Infrastructure.Data;
-using RealEstate.Infrastructure.Data.Seeding.ExtensionMethods;
 
 namespace RealEstate
 {
