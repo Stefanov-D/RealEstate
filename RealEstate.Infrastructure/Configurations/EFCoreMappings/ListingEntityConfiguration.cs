@@ -42,6 +42,10 @@ namespace RealEstate.Infrastructure.Configurations.EFCoreMappings
             entity.Property(e => e.ListingTypeId)
                 .IsRequired()
                 .HasComment("Foreign key to the ListingType table");
+
+            entity.Property(e => e.IsNewEnquiry)
+                .HasDefaultValue(false)
+                .HasComment("Indicator if the listing is new enquiry");
                 
             entity.HasOne(e => e.Agent)
                 .WithMany(a => a.Listings)

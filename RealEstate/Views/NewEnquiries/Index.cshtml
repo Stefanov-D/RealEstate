@@ -118,7 +118,7 @@
 	@foreach (var p in Model)
 	{
 		@* <div class="property-wrapper"> *@
-		<div class="row property-wrapper mb-4 clickable-post" data-url="@Url.Action("PostDetails", "NewEnquiries", new { id = p.Id })">
+		<div class="row property-wrapper mb-4 clickable-post" data-url="@Url.Action("ListingDetails", "NewEnquiries", new { id = p.Id })">
 			<div class="col-md-4 property-container">
 				@if (p.Images != null && p.Images.Any())
 				{
