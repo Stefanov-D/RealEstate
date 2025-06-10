@@ -42,6 +42,9 @@ namespace RealEstate.Application.Models.PostInputModels
         [DisplayName("Type")]
         public string? ListingType { get; set; }
 
+        public Guid? AgentId { get; set; }
+        public string? Agent { get; set; }        
+
         public List<string> UploadedImagePaths { get; set; } = new();
     }
 }

@@ -15,8 +15,9 @@ namespace RealEstate.Application.Services
         public ListingService(IApplicationDbContext context)
         {
             db = context;
-        }
-        public Task<int> CreateListingAsync(CreateListingInputModel dto)
+        }        
+
+        public async Task<int> CreateListingAsync(CreateListingInputModel dto)
         {
             throw new NotImplementedException();
         }
@@ -71,7 +72,7 @@ namespace RealEstate.Application.Services
                 .AsNoTracking()
                 .Include(p => p.Images)
                 .Include(p => p.Category)
-                .Where(p => p.Category.Name == "For Sale")
+                .Where(p => p.Category.Name == "For Sale" && p.IsNewEnquiry == false)
                 .OrderByDescending(p => p.Price)
                 .Select(p => new ListingViewModel
                 {
@@ -96,7 +97,7 @@ namespace RealEstate.Application.Services
                 .AsNoTracking()
                 .Include(p => p.Images)
                 .Include(p => p.Category)
-                .Where(p => p.Category.Name == "For Rent")
+                .Where(p => p.Category.Name == "For Rent" && p.IsNewEnquiry == false)
                 .OrderByDescending(p => p.Price)
                 .Select(p => new ListingViewModel
                 {
@@ -159,7 +160,6 @@ namespace RealEstate.Application.Services
         {
             throw new NotImplementedException();
         }
-
         public async Task<bool> UpdateListingAsync(UpdateListingInputModel obj, Listing listingToUpdate)
         {
             if (obj == null || listingToUpdate == null)

@@ -3,41 +3,43 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RealEstate.Application.Models.PostInputModels;
 using RealEstate.Domain.Entities;
+using RealEstate.Domain.Interfaces;
 using RealEstate.Infrastructure.Data;
 
 namespace RealEstate.Controllers
 {
-    public class SellController : Controller
+    public class AddListingController : Controller
     {
-        private readonly ApplicationDbContext _db;
-
-        public SellController(ApplicationDbContext db/*, ILogger logger*/)
+        private readonly ApplicationDbContext db;
+        readonly IListingService propertyService;
+        public AddListingController(IListingService service, ApplicationDbContext dbContext)
         {
-            this._db = db;
-            /*this._logger = logger;*/
+            propertyService = service;
+            db = dbContext;
         }
 
         [HttpGet]
-        public async Task<IActionResult> CreateEnquiry()
+        public async Task<IActionResult> AddListing()
         {
-            ViewBag.Categories = new SelectList(await this._db.Categories.ToListAsync(), "Id", "Name");
-            ViewBag.ListingTypes = new SelectList(await this._db.ListingTypes.Where(t => t.Name != "Buy").OrderBy(t => t.Id).ToListAsync(), "Id", "Name");
+            ViewBag.Categories = new SelectList(await this.db.Categories.Select(a => new { a.Id, a.Name }).ToListAsync(), "Id", "Name");
+            ViewBag.ListingTypes = new SelectList(await this.db.ListingTypes.Where(t => t.Name != "Buy").OrderBy(t => t.Id).Select(a => new {a.Id, a.Name}).ToListAsync(), "Id", "Name");
+            ViewBag.Agents = new SelectList(
+                    await db.Agents
+                        .Select(a => new { a.Id, FullName = a.FirstName + " " + a.LastName })
+                        .ToListAsync(), "Id", "FullName");
 
-            var model = new CreateListingInputModel
-            {
-                UploadedImagePaths = new List<string>() // initialize to avoid null in the view
-            };
+            var model = new CreateListingInputModel();
 
             return View(model);
-        }  
+        }
 
         [HttpPost]
-        public async Task<IActionResult> CreateEnquiry(CreateListingInputModel obj)
+        public async Task<IActionResult> AddListing(CreateListingInputModel obj)
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.Categories = new SelectList(await _db.Categories.ToListAsync(), "Id", "Name");
-                ViewBag.ListingTypes = new SelectList(await _db.ListingTypes.Where(t => t.Name != "Buy").OrderBy(t => t.Id).ToListAsync(), "Id", "Name");
+                ViewBag.Categories = new SelectList(await db.Categories.ToListAsync(), "Id", "Name");
+                ViewBag.ListingTypes = new SelectList(await db.ListingTypes.Where(t => t.Name != "Buy").OrderBy(t => t.Id).ToListAsync(), "Id", "Name");
 
                 // Make sure this is not null to avoid runtime errors in the view
                 if (obj.UploadedImagePaths == null)
@@ -51,13 +53,15 @@ namespace RealEstate.Controllers
                 Title = obj.Title,
                 ListingTypeId = obj.ListingTypeId,
                 Price = obj.Price,
-                Address = new Address {
+                Address = new Address
+                {
                     Street = obj.Street,
                     City = obj.City,
                     ZipCode = obj.ZipCode,
                 },
                 Description = obj.Description,
                 CategoryId = obj.CategoryId,
+                AgentId = obj.AgentId,
                 Images = new List<Image>()
             };
             // 2. Move temp images to permanent folder and create DB records
@@ -82,56 +86,27 @@ namespace RealEstate.Controllers
                         System.IO.File.Move(tempFile, newFile);
                     }
 
-                    property.Images.Add(new Image() 
+                    property.Images.Add(new Image()
                     {
                         ImageUrl = newUrl,
-                        IsPrimary = false? true : false
+                        IsPrimary = false ? true : false
                     });
                 }
                 catch (Exception ex)
                 {
                     // Optionally: log and skip or rethrow
                     ModelState.AddModelError("", "Error processing images. Please try again.");
-                    return View(nameof(CreateEnquiry), obj);
+                    return View(nameof(AddListing), obj);
                 }
             }
 
             // 3. Save to database
-            _db.Listings.Add(property);
-            await _db.SaveChangesAsync();
+            db.Listings.Add(property);
+            await db.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "Your enquiry has been successfully submitted!";
 
-            return RedirectToAction(nameof(CreateEnquiry));
-        }
-
-        // Controller: Add async image upload endpoint
-        [HttpPost]
-        public async Task<IActionResult> UploadTempImage(List<IFormFile> images)
-        {
-            var uploadedPaths = new List<string>();
-
-            var tempFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/temp");
-            if (!Directory.Exists(tempFolder))
-                Directory.CreateDirectory(tempFolder);
-
-            foreach (var image in images)
-            {
-                if (image.Length > 0)
-                {
-                    var fileName = Path.GetRandomFileName() + Path.GetExtension(image.FileName);
-                    var filePath = Path.Combine(tempFolder, fileName);
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await image.CopyToAsync(stream);
-                    }
-
-                    uploadedPaths.Add("/uploads/temp/" + fileName);
-                }
-            }
-
-            return Json(new { success = true, paths = uploadedPaths });
+            return RedirectToAction(nameof(AddListing));
         }
     }
 }

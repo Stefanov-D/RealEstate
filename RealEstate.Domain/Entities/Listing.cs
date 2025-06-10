@@ -10,6 +10,8 @@
 
         public string? Description { get; set; }
 
+        public bool? IsNewEnquiry { get; set; }
+
         public Guid? AgentId { get; set; }
         public Agent? Agent { get; set; }
 

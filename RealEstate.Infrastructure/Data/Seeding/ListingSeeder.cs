@@ -18,7 +18,8 @@ namespace RealEstate.Infrastructure.Data.Seeding
                         AgentId = Guid.Parse("DE942F9A-7E65-4A3B-8C78-D299E2A95FD1"),
                         AddressId = Guid.Parse("bd81c3f5-e931-470c-8f1d-738aca6875bb"),
                         CategoryId = Guid.Parse("92BA9297-2F3B-49B2-86AB-4EF51F508A94"),
-                        ListingTypeId = Guid.Parse("DFC7EEB8-1567-40B6-99B3-020F59883226")
+                        ListingTypeId = Guid.Parse("DFC7EEB8-1567-40B6-99B3-020F59883226"),
+                        IsNewEnquiry = false
                     },
                     new Listing
                     {
@@ -29,7 +30,8 @@ namespace RealEstate.Infrastructure.Data.Seeding
                         AgentId = Guid.Parse("DE942F9A-7E65-4A3B-8C78-D299E2A95FD1"),
                         AddressId = Guid.Parse("a6ba07e7-5b18-4ddb-b23f-a15e35eb10df"),
                         CategoryId = Guid.Parse("92BA9297-2F3B-49B2-86AB-4EF51F508A94"),
-                        ListingTypeId = Guid.Parse("DFC7EEB8-1567-40B6-99B3-020F59883226")
+                        ListingTypeId = Guid.Parse("DFC7EEB8-1567-40B6-99B3-020F59883226"),
+                        IsNewEnquiry = false
                     },
                     new Listing
                     {
@@ -40,7 +42,8 @@ namespace RealEstate.Infrastructure.Data.Seeding
                         AgentId = Guid.Parse("DE942F9A-7E65-4A3B-8C78-D299E2A95FD1"),
                         AddressId = Guid.Parse("a0ad82a3-cc6c-4c88-88c3-75b65e4bf064"),
                         CategoryId = Guid.Parse("92BA9297-2F3B-49B2-86AB-4EF51F508A94"),
-                        ListingTypeId = Guid.Parse("DFC7EEB8-1567-40B6-99B3-020F59883226")
+                        ListingTypeId = Guid.Parse("DFC7EEB8-1567-40B6-99B3-020F59883226"),
+                        IsNewEnquiry = false
                     },
                     new Listing
                     {
@@ -51,7 +54,8 @@ namespace RealEstate.Infrastructure.Data.Seeding
                         AgentId = Guid.Parse("DE942F9A-7E65-4A3B-8C78-D299E2A95FD1"),
                         AddressId = Guid.Parse("3efd2e0b-6af1-4fb5-aa89-a79ea8948268"),
                         CategoryId = Guid.Parse("92BA9297-2F3B-49B2-86AB-4EF51F508A94"),
-                        ListingTypeId = Guid.Parse("DFC7EEB8-1567-40B6-99B3-020F59883226")
+                        ListingTypeId = Guid.Parse("DFC7EEB8-1567-40B6-99B3-020F59883226"),
+                        IsNewEnquiry = false
                     },
                     new Listing
                     {
@@ -62,7 +66,8 @@ namespace RealEstate.Infrastructure.Data.Seeding
                         AgentId = Guid.Parse("DE942F9A-7E65-4A3B-8C78-D299E2A95FD1"),
                         AddressId = Guid.Parse("5a2cae53-e1ac-4e8c-abf1-66a840ee8d5b"),
                         CategoryId = Guid.Parse("92BA9297-2F3B-49B2-86AB-4EF51F508A94"),
-                        ListingTypeId = Guid.Parse("DFC7EEB8-1567-40B6-99B3-020F59883226")
+                        ListingTypeId = Guid.Parse("DFC7EEB8-1567-40B6-99B3-020F59883226"),
+                        IsNewEnquiry = false
                     },
                     new Listing
                     {
@@ -73,7 +78,8 @@ namespace RealEstate.Infrastructure.Data.Seeding
                         AgentId = Guid.Parse("DE942F9A-7E65-4A3B-8C78-D299E2A95FD1"),
                         AddressId = Guid.Parse("4b65e413-0798-4f84-a201-300d4b864d15"),
                         CategoryId = Guid.Parse("92BA9297-2F3B-49B2-86AB-4EF51F508A94"),
-                        ListingTypeId = Guid.Parse("7D0D777C-5883-4A04-ADAC-1E3716D4E362")
+                        ListingTypeId = Guid.Parse("7D0D777C-5883-4A04-ADAC-1E3716D4E362"),
+                        IsNewEnquiry = false
                     },
                     new Listing
                     {
@@ -84,7 +90,8 @@ namespace RealEstate.Infrastructure.Data.Seeding
                         AgentId = Guid.Parse("DE942F9A-7E65-4A3B-8C78-D299E2A95FD1"),
                         AddressId = Guid.Parse("7188fe77-d8c3-4b7a-9b90-c2c4b38e85e7"),
                         CategoryId = Guid.Parse("B1AE36DB-455D-4099-82FD-BB5804B9AA61"),
-                        ListingTypeId = Guid.Parse("7D0D777C-5883-4A04-ADAC-1E3716D4E362")
+                        ListingTypeId = Guid.Parse("7D0D777C-5883-4A04-ADAC-1E3716D4E362"),
+                        IsNewEnquiry = false
                     },
                     new Listing
                     {
@@ -95,7 +102,8 @@ namespace RealEstate.Infrastructure.Data.Seeding
                         AgentId = Guid.Parse("DE942F9A-7E65-4A3B-8C78-D299E2A95FD1"),
                         AddressId = Guid.Parse("55c0c7da-c0db-4318-b378-9c1d314e5fcd"),
                         CategoryId = Guid.Parse("B1AE36DB-455D-4099-82FD-BB5804B9AA61"),
-                        ListingTypeId = Guid.Parse("7D0D777C-5883-4A04-ADAC-1E3716D4E362")
+                        ListingTypeId = Guid.Parse("7D0D777C-5883-4A04-ADAC-1E3716D4E362"),
+                        IsNewEnquiry = false
                     },
                     new Listing
                     {
@@ -106,7 +114,8 @@ namespace RealEstate.Infrastructure.Data.Seeding
                         AgentId = Guid.Parse("DE942F9A-7E65-4A3B-8C78-D299E2A95FD1"),
                         AddressId = Guid.Parse("850e55af-c748-477c-9bba-991972fa0e89"),
                         CategoryId = Guid.Parse("B1AE36DB-455D-4099-82FD-BB5804B9AA61"),
-                        ListingTypeId = Guid.Parse("7D0D777C-5883-4A04-ADAC-1E3716D4E362")
+                        ListingTypeId = Guid.Parse("7D0D777C-5883-4A04-ADAC-1E3716D4E362"),
+                        IsNewEnquiry = true
                     },
                     new Listing
                     {
@@ -117,7 +126,8 @@ namespace RealEstate.Infrastructure.Data.Seeding
                         AgentId = Guid.Parse("DE942F9A-7E65-4A3B-8C78-D299E2A95FD1"),
                         AddressId = Guid.Parse("b4a2e294-df02-4cdb-8bf6-e0a8bf3bbefe"),
                         CategoryId = Guid.Parse("B1AE36DB-455D-4099-82FD-BB5804B9AA61"),
-                        ListingTypeId = Guid.Parse("7D0D777C-5883-4A04-ADAC-1E3716D4E362")
+                        ListingTypeId = Guid.Parse("7D0D777C-5883-4A04-ADAC-1E3716D4E362"),
+                        IsNewEnquiry = true
                     }
                 );
 

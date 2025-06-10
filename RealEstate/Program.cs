@@ -1,5 +1,6 @@
 using RealEstate.Application;
 using RealEstate.Infrastructure;
+using RealEstate.Infrastructure.Data.Seeding.ExtensionMethods;
 
 namespace RealEstate
 {
@@ -21,7 +22,7 @@ namespace RealEstate
 
             var app = builder.Build();
 
-            //app.SeedDatabase();
+            app.SeedDatabase();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
