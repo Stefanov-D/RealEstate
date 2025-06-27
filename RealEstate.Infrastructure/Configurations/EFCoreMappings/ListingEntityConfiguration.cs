@@ -29,16 +29,16 @@ namespace RealEstate.Infrastructure.Configurations.EFCoreMappings
                 .HasComment("Optional detailed description of the property");
 
             entity.Property(e => e.AgentId)
-                .HasComment("Foreign key to the Agent table");           
+                .HasComment("Foreign key to the Agent table");
 
             entity.Property(e => e.AddressId)
                 .IsRequired()
                 .HasComment("Foreign key to the Address table");
-                        
+
             entity.Property(e => e.CategoryId)
                 .IsRequired()
                 .HasComment("Foreign key to the Category table");
-                    
+
             entity.Property(e => e.ListingTypeId)
                 .IsRequired()
                 .HasComment("Foreign key to the ListingType table");
@@ -46,10 +46,11 @@ namespace RealEstate.Infrastructure.Configurations.EFCoreMappings
             entity.Property(e => e.IsNewEnquiry)
                 .HasDefaultValue(false)
                 .HasComment("Indicator if the listing is new enquiry");
-                
+
             entity.HasOne(e => e.Agent)
                 .WithMany(a => a.Listings)
-                .HasForeignKey(e => e.AgentId);
+                .HasForeignKey(e => e.AgentId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             entity.HasOne(p => p.Address)
                 .WithOne(a => a.Listing)
@@ -57,11 +58,13 @@ namespace RealEstate.Infrastructure.Configurations.EFCoreMappings
 
             entity.HasOne(p => p.Category)
                 .WithMany(pt => pt.Listings)
-                .HasForeignKey(p => p.CategoryId);
+                .HasForeignKey(p => p.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(p => p.ListingType)
                 .WithMany(pt => pt.Listings)
-                .HasForeignKey(p => p.ListingTypeId);
+                .HasForeignKey(p => p.ListingTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasMany(p => p.Images)
                 .WithOne(i => i.Listing)

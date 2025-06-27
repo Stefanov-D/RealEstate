@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace RealEstate.Application.Models.PostInputModels
 {
-    public class CreateListingInputModel
+    public class EditListingInputModel
     {
         [Required(ErrorMessage = "Title is required.")]
         [MinLength(5, ErrorMessage = "Title must be at least 5 characters.")]
@@ -10,7 +11,7 @@ namespace RealEstate.Application.Models.PostInputModels
         public string Title { get; set; } = null!;
 
         [Required(ErrorMessage = "Price is required.")]
-        [Range(0.1, double.MaxValue, ErrorMessage = "Price must be greater than 0.")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0.")]
         public decimal Price { get; set; }
 
         [Required(ErrorMessage = "City is required.")]
@@ -28,16 +29,15 @@ namespace RealEstate.Application.Models.PostInputModels
         public string? Description { get; set; }
 
         [Required(ErrorMessage = "Category is required.")]
-        public Guid CategoryId { get; set; }        
+        public Guid? CategoryId { get; set; }
 
         public string? Category { get; set; }
 
         [Required(ErrorMessage = "Listing type is required.")]
-        public Guid ListingTypeId { get; set; }
+        public Guid? ListingTypeId { get; set; }
 
+        [DisplayName("Type")]
         public string? ListingType { get; set; }
-
-        public Guid? AgentId { get; set; }
 
         public List<string> UploadedImagePaths { get; set; } = new List<string>();
     }

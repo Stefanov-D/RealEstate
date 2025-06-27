@@ -1,4 +1,4 @@
-namespace RealEstate.Models
+namespace RealEstate.Application.Models.GetViewModels
 {
     public class ErrorViewModel
     {

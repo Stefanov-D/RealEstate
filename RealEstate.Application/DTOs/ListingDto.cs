@@ -1,8 +1,6 @@
-﻿using System.ComponentModel;
-
-namespace RealEstate.Application.Models.PostInputModels
+﻿namespace RealEstate.Application.DTOs
 {
-    public class ListingDetailsViewModel
+    public class ListingDto
     {
         public Guid? Id { get; set; }
         public string Title { get; set; } = null!;
@@ -14,9 +12,8 @@ namespace RealEstate.Application.Models.PostInputModels
         public Guid? CategoryId { get; set; }
         public string? Category { get; set; }
         public Guid? ListingTypeId { get; set; }
-
-        [DisplayName("Type")]
         public string? ListingType { get; set; }
+        public Guid? AgentId { get; set; }
         public List<string> Images { get; set; } = new List<string>();
     }
 }

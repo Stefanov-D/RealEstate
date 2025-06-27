@@ -1,5 +1,7 @@
-using RealEstate.Application;
+using RealEstate.Application.Interfaces;
+using RealEstate.Application.Services;
 using RealEstate.Infrastructure;
+using RealEstate.Infrastructure.Data;
 using RealEstate.Infrastructure.Data.Seeding.ExtensionMethods;
 
 namespace RealEstate
@@ -12,7 +14,8 @@ namespace RealEstate
 
             // Add services to the container.
             builder.Services.AddInfrastructure(builder.Configuration);
-            builder.Services.AddApplication();
+            builder.Services.AddScoped<IListingService, ListingService>();
+            builder.Services.AddScoped<IListingDataAccess, ListingDataAccess>();
 
             builder.Services.AddRazorPages();
 

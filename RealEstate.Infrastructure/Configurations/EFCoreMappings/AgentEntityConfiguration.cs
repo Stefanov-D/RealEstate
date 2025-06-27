@@ -2,12 +2,6 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RealEstate.Domain.Entities;
 using RealEstate.Infrastructure.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RealEstate.Infrastructure.Configurations.EFCoreMappings
 {
@@ -38,11 +32,13 @@ namespace RealEstate.Infrastructure.Configurations.EFCoreMappings
             entity
                  .HasOne<ApplicationUser>() // no direct property, so specify the type
                  .WithOne(u => u.AgentProfile)
-                 .HasForeignKey<Agent>(a => a.UserId);
+                 .HasForeignKey<Agent>(a => a.UserId)
+                 .OnDelete(DeleteBehavior.SetNull);
 
             entity.HasMany(e => e.Listings)
                 .WithOne(p => p.Agent)
-                .HasForeignKey(p => p.AgentId);
+                .HasForeignKey(p => p.AgentId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

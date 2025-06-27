@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using RealEstate.Application.Interfaces;
 using RealEstate.Infrastructure.Data;
 using RealEstate.Infrastructure.Data.Seed;
 using RealEstate.Infrastructure.Data.Seeding;
@@ -18,10 +17,6 @@ namespace RealEstate.Infrastructure
             services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
-            // Bind interface to concrete implementation
-            services.AddScoped<IApplicationDbContext>(provider =>
-                    provider.GetRequiredService<ApplicationDbContext>());
-
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
                 {
                     options.SignIn.RequireConfirmedAccount = false;
@@ -29,18 +24,6 @@ namespace RealEstate.Infrastructure
                     .AddEntityFrameworkStores<ApplicationDbContext>()
                     .AddDefaultUI()
                     .AddDefaultTokenProviders();
-
-            /*services
-                .AddDefaultIdentity<ApplicationUser>(options =>
-                {
-                    options.SignIn.RequireConfirmedAccount = false;
-                })
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                    .AddEntityFrameworkStores<ApplicationDbContext>()
-                    .AddDefaultTokenProviders();*/
-
 
             services.AddTransient<ISeeder, AddressSeeder>();
             services.AddTransient<ISeeder, IdentitySeeder>();
