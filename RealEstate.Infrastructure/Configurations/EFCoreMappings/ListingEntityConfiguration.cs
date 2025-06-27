@@ -50,7 +50,7 @@ namespace RealEstate.Infrastructure.Configurations.EFCoreMappings
             entity.HasOne(e => e.Agent)
                 .WithMany(a => a.Listings)
                 .HasForeignKey(e => e.AgentId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(p => p.Address)
                 .WithOne(a => a.Listing)

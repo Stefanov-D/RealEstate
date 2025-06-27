@@ -33,7 +33,7 @@ namespace RealEstate.Infrastructure.Configurations.EFCoreMappings
                  .HasOne<ApplicationUser>() // no direct property, so specify the type
                  .WithOne(u => u.AgentProfile)
                  .HasForeignKey<Agent>(a => a.UserId)
-                 .OnDelete(DeleteBehavior.SetNull);
+                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasMany(e => e.Listings)
                 .WithOne(p => p.Agent)
