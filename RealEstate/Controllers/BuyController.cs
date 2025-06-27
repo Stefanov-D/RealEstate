@@ -1,26 +1,26 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RealEstate.Domain.Interfaces;
+using RealEstate.Application.Interfaces;
 
 namespace RealEstate.Controllers
 {
     public class BuyController : Controller
     {
-        private readonly IListingService propertyService;
+        private readonly IListingService listingService;
         public BuyController(IListingService service)
         {
-            propertyService = service;
+            listingService = service;
         }
         
         public async Task<IActionResult> Index()
         {
-            var listings = await propertyService.GetAllForSaleListingViewModelsAsync();
+            var listings = await listingService.GetAllForSaleListingViewModelsAsync();
             return View(listings);
         }
 
 
         public async Task<IActionResult> ListingDetails(Guid id)
         {
-            var listingInfo = await propertyService.GetListingViewModelByIdAsync(id);
+            var listingInfo = await listingService.GetListingViewModelByIdAsync(id);
 
             return View(listingInfo);
         }

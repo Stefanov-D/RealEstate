@@ -1,25 +1,40 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using RealEstate.Application.DTOs;
 using RealEstate.Application.Interfaces;
+using RealEstate.Application.Models.GetViewModels;
 using RealEstate.Application.Models.PostInputModels;
 using RealEstate.Domain.Entities;
-using RealEstate.Domain.Interfaces;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Hosting;
 
 namespace RealEstate.Application.Services
 {
     public class ListingService : IListingService
     {
-        private readonly IApplicationDbContext db;
+        private readonly IListingDataAccess dataAccess;
 
-        public ListingService(IApplicationDbContext context)
+        public ListingService(IListingDataAccess dataAccess)
         {
-            db = context;
-        }        
+            this.dataAccess = dataAccess;
+        }
 
-        public async Task<int> CreateListingAsync(CreateListingInputModel dto)
+        public async Task<bool> CreateListingAsync(CreateListingInputModel model)
         {
-            throw new NotImplementedException();
+            ListingDto listingToCreate = new ListingDto()
+            {
+                Title = model.Title,
+                ListingTypeId = model.ListingTypeId,
+                Price = model.Price,
+                Street = model.Street,
+                City = model.City,
+                ZipCode = model.ZipCode,
+                Description = model.Description,
+                CategoryId = model.CategoryId,
+                AgentId = model.AgentId,
+                Images = model.UploadedImagePaths
+            };           
+
+            // 3. Save to database
+            return await dataAccess.CreateListingEntityAsync(listingToCreate);
         }
 
         public async Task<bool> DeleteListingAsync(Guid id, string webRootPath)
@@ -29,7 +44,7 @@ namespace RealEstate.Application.Services
                 return false;
             }
 
-            Listing? listingToBeDeleted = await GetListingByIdAsync(id);
+            Listing? listingToBeDeleted = await this.dataAccess.GetListingEntityByIdAsync(id);
 
             if (listingToBeDeleted == null)
             {
@@ -59,140 +74,115 @@ namespace RealEstate.Application.Services
                 }
             }
 
-            db.Listings.Remove(listingToBeDeleted);
-
-            await db.SaveChangesAsync();
+            await this.dataAccess.DeleteListingEntityAsync(listingToBeDeleted);
 
             return true;
         }
 
         public async Task<List<ListingViewModel>> GetAllForSaleListingViewModelsAsync()
         {
-            var listOfProperties = await db.Listings
-                .AsNoTracking()
-                .Include(p => p.Images)
-                .Include(p => p.Category)
-                .Where(p => p.Category.Name == "For Sale" && p.IsNewEnquiry == false)
-                .OrderByDescending(p => p.Price)
-                .Select(p => new ListingViewModel
-                {
-                    Id = p.Id,
-                    Title = p.Title,
-                    Price = p.Price,
-                    Description = p.Description!,
-                    Category = p.Category.Name,
-                    Images = p.Images
-                        .OrderByDescending(i => i.IsPrimary)
-                        .Select(i => i.ImageUrl)
-                        .ToList()
-                })
-                .ToListAsync();
+            IEnumerable<ListingDto> listingsForSale = await this.dataAccess.GetAllForSaleListingsAsync();
 
-            return listOfProperties;
+            List<ListingViewModel> listings = listingsForSale
+                .Select(dto => new ListingViewModel
+                {
+                    Id = dto.Id,
+                    Title = dto.Title,
+                    Price = dto.Price,
+                    Description = dto.Description,
+                    Category = dto.Category,
+                    Images = dto.Images
+                })
+            .ToList();
+
+            return listings;
         }
 
         public async Task<List<ListingViewModel>> GetAllForRentListingViewModelsAsync()
         {
-            var listOfProperties = await db.Listings
-                .AsNoTracking()
-                .Include(p => p.Images)
-                .Include(p => p.Category)
-                .Where(p => p.Category.Name == "For Rent" && p.IsNewEnquiry == false)
-                .OrderByDescending(p => p.Price)
-                .Select(p => new ListingViewModel
+            IEnumerable<ListingDto> listingDto = await this.dataAccess.GetAllForRentListingsAsync();
+
+            List<ListingViewModel> listOfProperties = listingDto
+                .Select(dto => new ListingViewModel
                 {
-                    Id = p.Id,
-                    Title = p.Title,
-                    Price = p.Price,
-                    Description = p.Description!,
-                    Category = p.Category.Name,
-                    Images = p.Images
-                        .OrderByDescending(i => i.IsPrimary)
-                        .Select(i => i.ImageUrl)
-                        .ToList()
+                    Id = dto.Id,
+                    Title = dto.Title,
+                    Price = dto.Price,
+                    Description = dto.Description,
+                    Category = dto.Category,
+                    Images = dto.Images
                 })
-                .ToListAsync();
+                .ToList();
 
             return listOfProperties;
         }
 
-        public async Task<Listing?> GetListingByIdAsync(Guid id)
-        {
-            Listing? listing = await db.Listings.Include(l => l.Address)
-                .Include(l => l.ListingType)
-                .Include(l => l.Category)
-                .Include(l => l.Images)
-                .FirstOrDefaultAsync(i => i.Id == id);
-
-            return listing;
-        }
-
         public async Task<ListingDetailsViewModel?> GetListingViewModelByIdAsync(Guid id)
         {
-            var propertyInfo = await db.Listings
-                .Where(p => p.Id == id)
-                .Include(p => p.Category)
-                .Include(p => p.ListingType)
-                .Include(p => p.Images)
-                .Include(p => p.Address)
-                .Select(p => new ListingDetailsViewModel
-                {
-                    Id = p.Id,
-                    Title = p.Title,
-                    Price = p.Price,
-                    Description = p.Description!,
-                    CategoryId = p.CategoryId,
-                    ListingTypeId = p.ListingTypeId,
-                    City = p.Address.City,
-                    Street = p.Address.Street,
-                    ZipCode = p.Address.ZipCode,
-                    Images = p.Images
+            Listing? listing = await this.dataAccess.GetListingEntityByIdAsync(id);
+
+            ListingDetailsViewModel listingInfo = new ListingDetailsViewModel()
+            {
+                Id = listing.Id,
+                Title = listing.Title,
+                Price = listing.Price,
+                Description = listing.Description!,
+                CategoryId = listing.CategoryId,
+                ListingTypeId = listing.ListingTypeId,
+                City = listing.Address.City,
+                Street = listing.Address.Street,
+                ZipCode = listing.Address.ZipCode,
+                Images = listing.Images
                         .OrderByDescending(i => i.IsPrimary)
                         .Select(i => i.ImageUrl)
                         .ToList()
-                })
-                .FirstOrDefaultAsync();
+            };
 
-            return propertyInfo;
+            return listingInfo;
         }
 
         public Task<List<ListingViewModel>> GetAllListingsViewModelAsync()
         {
             throw new NotImplementedException();
         }
-        public async Task<bool> UpdateListingAsync(UpdateListingInputModel obj, Listing listingToUpdate)
+        public async Task<bool> EditListingAsync(Guid id, EditListingInputModel obj)
         {
-            if (obj == null || listingToUpdate == null)
+            if (obj == null)
                 return false;
 
             // Validate model
             var validationResults = new List<ValidationResult>();
             var validationContext = new ValidationContext(obj);
-            bool isValid = Validator.TryValidateObject(obj, validationContext, validationResults, true);
-            if (!isValid)
+            if (!Validator.TryValidateObject(obj, validationContext, validationResults, true))
                 return false;
 
-            // Step 1: Update listing fields
-            listingToUpdate.Title = obj.Title;
-            listingToUpdate.Price = obj.Price;
-            listingToUpdate.Description = obj.Description;
-            listingToUpdate.Address.City = obj.City;
-            listingToUpdate.Address.Street = obj.Street;
-            listingToUpdate.Address.ZipCode = obj.ZipCode;
-            listingToUpdate.CategoryId = obj.CategoryId;
-            listingToUpdate.ListingTypeId = obj.ListingTypeId;
+            // Step 1: Move images first
+            var resolvedImagePaths = await this.MoveUploadedImagesAsync(obj.UploadedImagePaths);
+            if (resolvedImagePaths == null)
+                return false;
+
+            obj.UploadedImagePaths = resolvedImagePaths;
 
             try
             {
-                await db.SaveChangesAsync();
+                // Step 2: Update listing fields
+                bool updated = await this.dataAccess.EditListingEntityAsync(id, obj);
+                if (!updated)
+                    return false;
+
+                // Step 3: Sync images using final URLs
+                bool synced = await this.dataAccess.SyncImageRecordsInDb(id, resolvedImagePaths);
+                return synced;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error saving listing info: {ex.Message}");
+                Console.WriteLine($"Error editing listing: {ex.Message}");
                 return false;
             }
+        }
 
-            // Step 2: Move image files from temp to permanent folder and build new URLs
+        private async Task<List<string>?> MoveUploadedImagesAsync(List<string>? uploadedImagePaths)
+        {
             var wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
             var tempPath = Path.Combine(wwwrootPath, "uploads", "temp");
             var permanentPath = Path.Combine(wwwrootPath, "uploads", "properties");
@@ -202,81 +192,233 @@ namespace RealEstate.Application.Services
 
             var resolvedImagePaths = new List<string>();
 
-            foreach (var tempUrl in obj.UploadedImagePaths ?? new List<string>())
+            foreach (var tempUrl in uploadedImagePaths ?? new List<string>())
             {
-                var fileName = Path.GetFileName(tempUrl);
-                var tempFile = Path.Combine(tempPath, fileName);
-                var newFile = Path.Combine(permanentPath, fileName);
-                var newUrl = "/uploads/properties/" + fileName;
-
                 try
                 {
+                    var fileName = Path.GetFileName(tempUrl);
+
+                    if (tempUrl.StartsWith("/images/") || tempUrl.StartsWith("/uploads/properties/"))
+                    {
+                        resolvedImagePaths.Add(tempUrl);
+                        continue;
+                    }
+
+                    var tempFile = Path.Combine(tempPath, fileName);
+                    var newFile = Path.Combine(permanentPath, fileName);
+                    var newUrl = "/uploads/properties/" + fileName;
+
                     if (System.IO.File.Exists(tempFile))
                     {
                         System.IO.File.Move(tempFile, newFile);
                     }
+
                     resolvedImagePaths.Add(newUrl);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Error moving image: {ex.Message}");
-                    return false;
+                    return null;
                 }
             }
 
-            // Step 3: Sync image records in DB
+            return resolvedImagePaths;
+        }
 
-            // Remove images no longer in the new list
-            var imagesToRemove = listingToUpdate.Images.Where(i => !resolvedImagePaths.Contains(i.ImageUrl)).ToList();
-            foreach (var image in imagesToRemove)
+
+        public EditListingInputModel? GetUpdateListingInputModelByIdAsync(ListingDetailsViewModel model)
+        {
+            EditListingInputModel? inputModel = new EditListingInputModel
             {
-                listingToUpdate.Images.Remove(image);
-                db.Images.Remove(image);
-            }
+                Title = model.Title,
+                Description = model.Description,
+                Price = model.Price,
+                City = model.City,
+                ZipCode = model.ZipCode,
+                Street = model.Street,
+                CategoryId = model.CategoryId,
+                ListingTypeId = model.ListingTypeId,
+                UploadedImagePaths = model.Images
+            };
 
-            // Add new images not already in DB
-            var existingPaths = listingToUpdate.Images.Select(i => i.ImageUrl).ToHashSet();
-            var imagesToAdd = resolvedImagePaths.Where(p => !existingPaths.Contains(p));
+            return inputModel;
+        }
 
-            foreach (var path in imagesToAdd)
-            {
-                var newImage = new Image()
+        public async Task<List<ListingViewModel>> GetAllListingsViewModel()
+        {
+            IEnumerable<ListingDto> listings = await this.dataAccess.GetAllListingsAsync();
+
+            List<ListingViewModel> result = listings
+                .Select(dto => new ListingViewModel
                 {
-                    ListingId = listingToUpdate.Id,
-                    ImageUrl = path,
-                    IsPrimary = false
-                };
-                listingToUpdate.Images.Add(newImage);
-                db.Images.Add(newImage);
-            }
+                    Id = dto.Id,
+                    Title = dto.Title,
+                    Price = dto.Price,
+                    Description = dto.Description,
+                    Category = dto.Category,
+                    Images = dto.Images
+                })
+                .ToList();
 
-            // Mark only the first image as primary
-            bool primarySet = false;
-            foreach (var img in listingToUpdate.Images)
+            return result;
+        }
+
+        public async Task<CreateListingInputViewModel> GetCreateListingInputViewModelAsync()
+        {
+            IEnumerable<CategoriesDto> categories = await this.dataAccess.GetAllCategoriesAsync();
+            IEnumerable<ListingTypeDto> listingTypes = await this.dataAccess.GetAllListingTypesAsync();
+            IEnumerable<AgentsDto> agents = await this.dataAccess.GetAllAgentsAsync();
+
+            var categoriesSelectList = categories.Select(c => new SelectListItem
             {
-                if (!primarySet)
+                Value = c.Id.ToString(),
+                Text = c.Name
+            });
+
+            var listingTypesSelectList = listingTypes.Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            });
+
+            var agentsSelectList = agents.Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            });
+
+            return new CreateListingInputViewModel
+            {
+                Categories = categoriesSelectList,
+                ListingTypes = listingTypesSelectList,
+                Agents = agentsSelectList,
+                Input = new CreateListingInputModel()
+            };
+        }
+
+        public async Task<CreateNewEnquiryInputViewModel> GetCreateNewEnquiryInputViewModelAsync()
+        {
+            IEnumerable<CategoriesDto> categories = await this.dataAccess.GetAllCategoriesAsync();
+            IEnumerable<ListingTypeDto> listingTypes = await this.dataAccess.GetAllListingTypesAsync();
+            IEnumerable<AgentsDto> agents = await this.dataAccess.GetAllAgentsAsync();
+
+            var categoriesSelectList = categories.Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            });
+
+            var listingTypesSelectList = listingTypes.Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            });
+
+            var agentsSelectList = agents.Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            });
+
+            return new CreateNewEnquiryInputViewModel
+            {
+                Categories = categoriesSelectList,
+                ListingTypes = listingTypesSelectList,
+                Agents = agentsSelectList,
+                Input = new CreateNewEnquiryInputModel()
+            };
+        }
+
+        public async Task<EditListingInputViewModel> GetEditListingInputViewModelAsync(Guid id)
+        {
+            IEnumerable<CategoriesDto> categories = await this.dataAccess.GetAllCategoriesAsync();
+            IEnumerable<ListingTypeDto> listingTypes = await this.dataAccess.GetAllListingTypesAsync();
+            IEnumerable<AgentsDto> agents = await this.dataAccess.GetAllAgentsAsync();
+
+            var categoriesSelectList = categories.Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            });
+
+            var listingTypesSelectList = listingTypes.Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            });
+
+            var agentsSelectList = agents.Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            });
+
+            Listing? listing = await this.dataAccess.GetListingEntityByIdAsync(id);
+
+            return new EditListingInputViewModel
+            {
+                Categories = categoriesSelectList,
+                ListingTypes = listingTypesSelectList,
+                Agents = agentsSelectList,
+                Input = new EditListingInputModel
                 {
-                    img.IsPrimary = true;
-                    primarySet = true;
+                    Title = listing.Title,
+                    Price = listing.Price,
+                    Description = listing.Description,
+                    City = listing.Address.City,
+                    ZipCode = listing.Address.ZipCode,
+                    Street = listing.Address.Street,
+                    CategoryId = listing.CategoryId,
+                    ListingTypeId = listing.ListingTypeId,
+                    UploadedImagePaths = listing.Images.Select(i => i.ImageUrl).ToList()
                 }
-                else
-                {
-                    img.IsPrimary = false;
-                }
-            }
+            };
+        }
 
-            try
+        public async Task<List<ListingViewModel>> GetAllNewEnquiriesViewModelAsync()
+        {
+            IEnumerable<ListingDto> newEnquiriesDto = await this.dataAccess
+                .GetAllNewEnquiriesAsync();
+
+            List<ListingViewModel> newEnquiriesViewModel = newEnquiriesDto
+                .Select(ne => new ListingViewModel
+                {
+                    Id = ne.Id,
+                    Title = ne.Title,
+                    Price = ne.Price,
+                    Description = ne.Description,
+                    City = ne.City,
+                    Street = ne.Street,
+                    ZipCode = ne.ZipCode,
+                    CategoryId = ne.CategoryId,
+                    Category = ne.Category,
+                    ListingTypeId = ne.ListingTypeId,
+                    ListingType = ne.ListingType,
+                    Images = ne.Images
+                })
+                .ToList();
+
+            return newEnquiriesViewModel;
+        }
+
+        public async Task<bool> CreateNewEnquiryAsync(CreateNewEnquiryInputModel model)
+        {
+            ListingDto enquiry = new ListingDto()
             {
-                await db.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error saving images: {ex.Message}");
-                return false;
-            }
+                Title = model.Title,
+                ListingTypeId = model.ListingTypeId,
+                Price = model.Price,
+                Street = model.Street,
+                City = model.City,
+                ZipCode = model.ZipCode,
+                Description = model.Description,
+                CategoryId = model.CategoryId,
+                Images = model.UploadedImagePaths
+            };
+
+            await this.dataAccess.CreateListingEntityAsync(enquiry);
 
             return true;
         }
-
     }
 }

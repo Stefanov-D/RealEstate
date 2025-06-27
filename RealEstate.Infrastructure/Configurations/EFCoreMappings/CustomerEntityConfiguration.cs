@@ -28,7 +28,8 @@ namespace RealEstate.Infrastructure.Configurations.EFCoreMappings
             entity
                  .HasOne<ApplicationUser>()
                  .WithOne(u => u.CustomerProfile)
-                 .HasForeignKey<Customer>(a => a.UserId);
+                 .HasForeignKey<Customer>(a => a.UserId)
+                 .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

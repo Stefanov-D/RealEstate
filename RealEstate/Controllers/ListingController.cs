@@ -1,122 +1,68 @@
-﻿using AspNetCoreGeneratedDocument;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using RealEstate.Application.Models.PostInputModels;
-using RealEstate.Domain.Entities;
-using RealEstate.Domain.Interfaces;
-using RealEstate.Infrastructure.Data;
+﻿using Microsoft.AspNetCore.Mvc;
+using RealEstate.Application.Interfaces;
+using RealEstate.Application.Models.GetViewModels;
 
 namespace RealEstate.Controllers
 {
     public class ListingController : Controller
     {
-        readonly IListingService propertyService;
-        private readonly ApplicationDbContext db;
+        private readonly IListingService listingService;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public ListingController(IListingService service,ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
+        public ListingController(IListingService service, IWebHostEnvironment webHostEnvironment)
         {
-            propertyService = service;
-            db = context;
+            listingService = service;
             _webHostEnvironment = webHostEnvironment;
         }
-
-        public IListingService PropertyService => propertyService;
         public async Task<IActionResult> Index(Guid id)
         {
-            var listing = await propertyService.GetListingViewModelByIdAsync(id);
+            var listing = await listingService.GetListingViewModelByIdAsync(id);
 
             return View();
         }
 
+        [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
-            ViewBag.Categories = new SelectList(await this.db.Categories.ToListAsync(), "Id", "Name");
-            ViewBag.ListingTypes = new SelectList(await this.db.ListingTypes.OrderBy(t => t.Id).ToListAsync(), "Id", "Name");
-            var listing = await propertyService.GetListingViewModelByIdAsync(id);
+            EditListingInputViewModel? model = await listingService.GetEditListingInputViewModelAsync(id);
 
-            if (listing == null)
+            if (model == null)
             {
                 return NotFound();
             }
 
-            var inputModel = new UpdateListingInputModel
-            {    
-                Title = listing.Title,
-                Description = listing.Description,
-                Price = listing.Price,
-                City = listing.City,
-                ZipCode = listing.ZipCode,
-                Street = listing.Street,
-                CategoryId = listing.CategoryId,
-                ListingTypeId = listing.ListingTypeId,
-                UploadedImagePaths = listing.Images
-            };
-
-            return View(inputModel);
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, UpdateListingInputModel obj)
+        public async Task<IActionResult> Edit(Guid id, EditListingInputViewModel obj)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || !await listingService.EditListingAsync(id, obj.Input))
             {
-                // If validation fails, make sure to repopulate dropdowns
-                ViewBag.Categories = new SelectList(await db.Categories.ToListAsync(), "Id", "Name");
-                ViewBag.ListingTypes = new SelectList(await db.ListingTypes.OrderBy(t => t.Id).ToListAsync(), "Id", "Name");
+                EditListingInputViewModel viewModel = await listingService.GetEditListingInputViewModelAsync(id);
 
-                // Return view with current model (including uploaded images)
-                return View(obj);
-            }
+                viewModel.Input = obj.Input;
 
-            ViewBag.Categories = new SelectList(await db.Categories.ToListAsync(), "Id", "Name");
-            ViewBag.ListingTypes = new SelectList(await db.ListingTypes.OrderBy(t => t.Id).ToListAsync(), "Id", "Name");
-
-            // Fetch the listing entity to update
-            var listingToUpdate = await propertyService.GetListingByIdAsync(id);
-            if (listingToUpdate == null)
-            {
-                return NotFound();
-            }
-
-            var success = await propertyService.UpdateListingAsync(obj, listingToUpdate);
-            if (!success)
-            {
-                ModelState.AddModelError("", "Update failed. Try again.");
-                return View(obj);
-            }
+                return View(viewModel);
+            }            
 
             // After successful update, reload the model from database including images
-            var updatedListing = await propertyService.GetListingViewModelByIdAsync(id);
+            var updatedListing = await listingService.GetEditListingInputViewModelAsync(id);
 
             if (updatedListing == null)
             {
                 return NotFound();
             }
 
-            var inputModel = new UpdateListingInputModel
-            {
-                Title = updatedListing.Title,
-                Description = updatedListing.Description,
-                Price = updatedListing.Price,
-                City = updatedListing.City,
-                ZipCode = updatedListing.ZipCode,
-                Street = updatedListing.Street,
-                CategoryId = updatedListing.CategoryId,
-                ListingTypeId = updatedListing.ListingTypeId,
-                UploadedImagePaths = updatedListing.Images // <-- Make sure this is populated with the image URLs!
-            };
-
             TempData["SuccessMessage"] = "Listing successfully updated!";
 
-            return View(inputModel);
+            return View(updatedListing);
         }
 
         [HttpPost]
         public async Task<IActionResult> Delete(Guid id)
         {
-            bool isDeleted = await propertyService.DeleteListingAsync(id, _webHostEnvironment.WebRootPath);
+            bool isDeleted = await listingService.DeleteListingAsync(id, _webHostEnvironment.WebRootPath);
 
             if (!isDeleted)
             {

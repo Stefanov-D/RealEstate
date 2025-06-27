@@ -1,5 +1,5 @@
 ﻿@using RealEstate.Application.Models.PostInputModels
-@model CreateListingInputModel
+@model CreateNewEnquiryInputViewModel
 
 @{
 	ViewData["Title"] = "Create New Enquiry";
@@ -61,54 +61,54 @@
 						<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
 						<div class="mb-3">
-							<label asp-for="Title" class="form-label">Title</label>
-							<input asp-for="Title" class="form-control" placeholder="e.g., Spacious Family Home" />
-							<span asp-validation-for="Title" class="text-danger small"></span>
+							<label asp-for="Input.Title" class="form-label">Title</label>
+							<input asp-for="Input.Title" class="form-control" placeholder="e.g., Spacious Family Home" />
+							<span asp-validation-for="Input.Title" class="text-danger small"></span>
 						</div>
 
 						<div class="mb-3">
-							<label asp-for="Price" class="form-label">Price</label>
-							<input asp-for="Price" type="number" class="form-control" placeholder="e.g., 350000" />
-							<span asp-validation-for="Price" class="text-danger small"></span>
+							<label asp-for="Input.Price" class="form-label">Price</label>
+							<input asp-for="Input.Price" type="number" class="form-control" placeholder="e.g., 350000" />
+							<span asp-validation-for="Input.Price" class="text-danger small"></span>
 						</div>
 
 						<div class="mb-3">
-							<label asp-for="Street" class="form-label">Street</label>
-							<input asp-for="Street" class="form-control auto-resize" placeholder="Address street name and number..."></input>
-							<span asp-validation-for="Street" class="text-danger small"></span>
+							<label asp-for="Input.Street" class="form-label">Street</label>
+							<input asp-for="Input.Street" class="form-control auto-resize" placeholder="Address street name and number..."></input>
+							<span asp-validation-for="Input.Street" class="text-danger small"></span>
 						</div>
 						<div class="mb-3">
-							<label asp-for="City" class="form-label">City</label>
-							<input asp-for="City" class="form-control auto-resize" placeholder="City..."></input>
-							<span asp-validation-for="City" class="text-danger small"></span>
+							<label asp-for="Input.City" class="form-label">City</label>
+							<input asp-for="Input.City" class="form-control auto-resize" placeholder="City..."></input>
+							<span asp-validation-for="Input.City" class="text-danger small"></span>
 						</div>
 						<div class="mb-3">
-							<label asp-for="ZipCode" class="form-label">ZipCode</label>
-							<input asp-for="ZipCode" class="form-control auto-resize" placeholder="ZipCode..."></input>
-							<span asp-validation-for="ZipCode" class="text-danger small"></span>
+							<label asp-for="Input.ZipCode" class="form-label">ZipCode</label>
+							<input asp-for="Input.ZipCode" class="form-control auto-resize" placeholder="ZipCode..."></input>
+							<span asp-validation-for="Input.ZipCode" class="text-danger small"></span>
 						</div>
 
 						<div class="mb-3">
-							<label asp-for="Description" class="form-label">Property Description</label>
-							<textarea asp-for="Description" class="form-control auto-resize" rows="4" placeholder="Brief description of the Listing..."></textarea>
-							<span asp-validation-for="Description" class="text-danger small"></span>
+							<label asp-for="Input.Description" class="form-label">Property Description</label>
+							<textarea asp-for="Input.Description" class="form-control auto-resize" rows="4" placeholder="Brief description of the Listing..."></textarea>
+							<span asp-validation-for="Input.Description" class="text-danger small"></span>
 						</div>
 
 						<div class="row">
 							<div class="col-12 col-md-6 mb-3">
-								<label asp-for="Category" class="form-label"></label>
-								<select asp-for="CategoryId" class="form-select" asp-items="ViewBag.Categories">
+								<label asp-for="Input.Category" class="form-label"></label>
+								<select asp-for="Input.CategoryId" class="form-select" asp-items="Model.Categories">
 									<option value="">-- Select --</option>
 								</select>
-								<span asp-validation-for="CategoryId" class="text-danger small"></span>
+								<span asp-validation-for="Input.CategoryId" class="text-danger small"></span>
 							</div>
 
 							<div class="col-12 col-md-6 mb-3">
-								<label asp-for="ListingType" class="form-label"></label>
-								<select asp-for="ListingTypeId" class="form-select" asp-items="ViewBag.ListingTypes">
+								<label asp-for="Input.ListingType" class="form-label"></label>
+								<select asp-for="Input.ListingTypeId" class="form-select" asp-items="Model.ListingTypes">
 									<option value="">-- Select --</option>
 								</select>
-								<span asp-validation-for="ListingTypeId" class="text-danger small"></span>
+								<span asp-validation-for="Input.ListingTypeId" class="text-danger small"></span>
 							</div>
 						</div>
 
@@ -153,7 +153,7 @@
 				const form = document.getElementById('listingForm');
 
 				// Deserialize existing uploaded images (if any)
-				let uploadedPaths = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.UploadedImagePaths ?? new List<string>()));
+				let uploadedPaths = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Input.UploadedImagePaths ?? new List<string>()));
 
 				function updateHiddenInputs() {
 					// Remove old hidden inputs
@@ -163,7 +163,7 @@
 					uploadedPaths.forEach((path, index) => {
 						const hiddenInput = document.createElement('input');
 						hiddenInput.type = 'hidden';
-						hiddenInput.name = `UploadedImagePaths[${index}]`;
+						hiddenInput.name = `Input.UploadedImagePaths[${index}]`;
 						hiddenInput.value = path;
 						form.appendChild(hiddenInput);
 					});
