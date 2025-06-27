@@ -29,7 +29,7 @@ namespace RealEstate.Infrastructure.Configurations.EFCoreMappings
                  .HasOne<ApplicationUser>()
                  .WithOne(u => u.CustomerProfile)
                  .HasForeignKey<Customer>(a => a.UserId)
-                 .OnDelete(DeleteBehavior.SetNull);
+                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
