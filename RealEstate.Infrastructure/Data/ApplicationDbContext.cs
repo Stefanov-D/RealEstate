@@ -17,7 +17,6 @@ namespace RealEstate.Infrastructure.Data
         {
 
         }
-
         
         public DbSet<Agent> Agents { get; set; }
 

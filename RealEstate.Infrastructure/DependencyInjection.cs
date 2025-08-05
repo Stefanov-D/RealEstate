@@ -14,8 +14,11 @@ namespace RealEstate.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
+            var connStr = configuration.GetConnectionString("DefaultConnection")
+              ?? throw new InvalidOperationException("Connection string not found.");
+
             services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(connStr));
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
                 {
