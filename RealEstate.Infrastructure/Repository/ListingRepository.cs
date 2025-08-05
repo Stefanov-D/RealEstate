@@ -20,7 +20,9 @@ namespace RealEstate.Infrastructure.Repository
                 .AsNoTracking()
                 .Include(x => x.Images)
                 .Include(x => x.Category)
-                .Where(x => x.Category.Name == "For Sale" && x.IsNewEnquiry == false)
+                .Include(x => x.ListingType)
+                .Include(x => x.Address)
+                .Where(x => x.Category!.Name == "For Sale" && x.IsNewEnquiry == false)
                 .ToListAsync();
         }
 
@@ -31,6 +33,7 @@ namespace RealEstate.Infrastructure.Repository
                 .Include(x => x.Images)
                 .Include(x => x.Category)
                 .Include(x => x.ListingType)
+                .Include(x => x.Address)
                 .Where(x => x.Category.Name == "For Rent" && x.IsNewEnquiry == false)
                 .ToListAsync();
         }
@@ -40,6 +43,8 @@ namespace RealEstate.Infrastructure.Repository
             return await db.Listings
                 .Include(x => x.Images)
                 .Include(x => x.Category)
+                .Include(x => x.ListingType)
+                .Include(x => x.Address)
                 .Where(x => x.IsNewEnquiry == true)
                 .ToListAsync();
         }

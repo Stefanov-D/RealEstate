@@ -31,18 +31,24 @@
 						<li class="nav-item">
 							<a class="nav-link " asp-area="" asp-controller="Rent" asp-action="Index">Rent</a>
 						</li>
-						<li class="nav-item">
-							<a class="nav-link " asp-area="" asp-controller="Sell" asp-action="CreateEnquiry">Sell</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link " asp-area="" asp-controller="AddListing" asp-action="AddListing">+Add Listing</a>
-						</li>
-						@* @if (User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("Agent")))
-						{ *@
+						@if (User.Identity.IsAuthenticated && (User.IsInRole("Admin")) || User.IsInRole("Customer"))
+						{
+							<li class="nav-item">
+								<a class="nav-link " asp-area="" asp-controller="Sell" asp-action="CreateEnquiry">Sell</a>
+							</li>
+						}
+						@if (User.Identity.IsAuthenticated && (User.IsInRole("Admin")) || User.IsInRole("Agent"))
+						{
+							<li class="nav-item">
+								<a class="nav-link " asp-area="" asp-controller="AddListing" asp-action="AddListing">+Add Listing</a>
+							</li>
+						}
+						@if (User.Identity.IsAuthenticated && (User.IsInRole("Admin")))
+						{
 							<li class="nav-item">
 								<a class="nav-link " asp-area="" asp-controller="NewEnquiries" asp-action="Index">New Enquiries</a>
 							</li>
-						@* } *@
+						}
 					</ul>
 					<partial name="_LoginPartial" />
 				</div>
