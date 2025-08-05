@@ -198,12 +198,14 @@
 			</div>
 
 			<!-- EXTRA SECTION: ORDER 3 ON MOBILE -->
-			<div class="section-box slide-in-bottom mt-2 order-3 order-lg-2">
-				<h5>Additional Details</h5>
-				<p>This section is for extra listing information such as agent contact, features, or documents.</p>
+			@if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+			{
+				<div class="section-box slide-in-bottom mt-2 order-3 order-lg-2">
+					<h5>Additional Details</h5>
+					<p>This section is for extra listing information such as agent contact, features, or documents.</p>
+				</div>
+			}
 
-
-			</div>
 		</div>
 
 		<!-- RIGHT COLUMN: TEXT -->
@@ -217,8 +219,13 @@
 				<hr />
 				<!-- NEW BUTTON SECTION -->
 				<div class="d-flex justify-content-between align-items-center mb-1">
-					<ul class="list-unstyled">
+					<ul class="list-unstyled mb-3">
 						<li><strong>Category:</strong> @Model.Category</li>
+						<li><strong>Type:</strong> @Model.ListingType</li>
+						<li><strong>City:</strong> @Model.City</li>
+						<li><strong>Street:</strong> @Model.Street</li>
+						<li><strong>Zip Code:</strong> @(Model.ZipCode?.ToString() ?? "N/A")</li>
+						<li><strong>Description:</strong> @Model.Description</li>
 					</ul>
 					@if (User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("Agent")))
 					{
@@ -237,11 +244,6 @@
 						</div>
 					}
 				</div>
-
-				@for (int i = 0; i < 50; i++)
-				{
-					<p class="mt-3">@Model.Description</p>
-				}
 			</div>
 		</div>
 
