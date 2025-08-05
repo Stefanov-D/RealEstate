@@ -7,11 +7,9 @@ namespace RealEstate.Controllers
     public class ListingController : Controller
     {
         private readonly IListingService listingService;
-        private readonly IWebHostEnvironment _webHostEnvironment;
         public ListingController(IListingService service, IWebHostEnvironment webHostEnvironment)
         {
             listingService = service;
-            _webHostEnvironment = webHostEnvironment;
         }
         public async Task<IActionResult> Index(Guid id)
         {
@@ -62,7 +60,7 @@ namespace RealEstate.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(Guid id)
         {
-            bool isDeleted = await listingService.DeleteListingAsync(id, _webHostEnvironment.WebRootPath);
+            bool isDeleted = await listingService.DeleteListingAsync(id);
 
             if (!isDeleted)
             {

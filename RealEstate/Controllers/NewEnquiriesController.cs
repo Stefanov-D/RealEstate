@@ -14,6 +14,7 @@ namespace RealEstate.Controllers
             this.listingService = listingService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var listOfProperties = await this.listingService.GetAllNewEnquiriesViewModelAsync();   
@@ -21,6 +22,7 @@ namespace RealEstate.Controllers
             return View(listOfProperties);
         }
 
+        [HttpGet]
         public async Task<IActionResult> ListingDetails(Guid id)
         {
             var listingInfo = await listingService.GetListingViewModelByIdAsync(id);
