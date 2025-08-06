@@ -43,7 +43,7 @@
 								<a class="nav-link " asp-area="" asp-controller="AddListing" asp-action="AddListing">+Add Listing</a>
 							</li>
 						}
-						@if (User.Identity.IsAuthenticated && (User.IsInRole("Admin")))
+						@if (User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("Agent")))
 						{
 							<li class="nav-item">
 								<a class="nav-link " asp-area="" asp-controller="NewEnquiries" asp-action="Index">New Enquiries</a>

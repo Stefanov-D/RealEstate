@@ -4,7 +4,7 @@ using RealEstate.Application.Interfaces;
 
 namespace RealEstate.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,Agent")]
     public class NewEnquiriesController : Controller
     {
         private readonly IListingService listingService;
