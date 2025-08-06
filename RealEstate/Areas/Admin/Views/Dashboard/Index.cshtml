@@ -6,6 +6,14 @@
 <div class="container py-4">
     <h2 class="mb-4">User Role Management</h2>
 
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
     <table class="table table-bordered table-hover">
         <thead class="table-light">
             <tr>
@@ -32,15 +40,15 @@
                         }
                     </td>
                     <td>
-                        <form asp-area="Admin" asp-controller="Dashboard" asp-action="UpdateUserRole" method="post" class="d-flex align-items-center gap-2">
+                        <form id="form-@user.Id" asp-area="Admin" asp-controller="Dashboard" asp-action="UpdateUserRole" method="post" class="d-flex align-items-center gap-2 role-update-form">
                             <input type="hidden" name="UserId" value="@user.Id" />
-                            <select class="form-select" name="SelectedRole">
+                            <select class="form-select role-select" name="SelectedRole">
                                 <option value="">Select role</option>
-                                <option value="User" selected="@user.Roles.Contains("Customer")">Customer</option>
+                                <option value="Customer" selected="@user.Roles.Contains("Customer")">Customer</option>
                                 <option value="Agent" selected="@user.Roles.Contains("Agent")">Agent</option>
                                 <option value="Admin" selected="@user.Roles.Contains("Admin")">Admin</option>
                             </select>
-                            <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                            <button type="button" class="btn btn-sm btn-primary open-confirm-modal" data-userid="@user.Id">Update</button>
                         </form>
                     </td>
                 </tr>
@@ -48,3 +56,54 @@
         </tbody>
     </table>
 </div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmRoleModal" tabindex="-1" aria-labelledby="confirmRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmRoleModalLabel">Confirm Role Change</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to change the role for this user to <strong id="selectedRoleText"></strong>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button id="confirmSubmitBtn" type="button" class="btn btn-primary">Yes, Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentForm = null;
+        let selectedRole = "";
+
+        document.querySelectorAll('.open-confirm-modal').forEach(button => {
+            button.addEventListener('click', function () {
+                const userId = this.dataset.userid;
+                const form = document.getElementById(`form-${userId}`);
+                const select = form.querySelector('.role-select');
+                selectedRole = select.value;
+
+                if (!selectedRole) {
+                    alert("Please select a role before updating.");
+                    return;
+                }
+
+                currentForm = form;
+                document.getElementById("selectedRoleText").textContent = selectedRole;
+                const modal = new bootstrap.Modal(document.getElementById("confirmRoleModal"));
+                modal.show();
+            });
+        });
+
+        document.getElementById("confirmSubmitBtn").addEventListener("click", function () {
+            if (currentForm) {
+                currentForm.submit();
+            }
+        });
+    </script>
+}
