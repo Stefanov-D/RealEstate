@@ -198,7 +198,7 @@
 			</div>
 
 			<!-- EXTRA SECTION: ORDER 3 ON MOBILE -->
-			@if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+			@if (User.Identity.IsAuthenticated && User.IsInRole("Admin") || User.IsInRole("Agent"))
 			{
 				<div class="section-box slide-in-bottom mt-2 order-3 order-lg-2">
 					<h5>Additional Details</h5>
