@@ -1,5 +1,76 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
+<div class="hero bg-light p-5 rounded mb-4 text-center">
+    <h1 class="display-4">Find Your Dream Home</h1>
+    <p class="lead">Browse the best properties for sale or rent in your area.</p>
+    <a asp-controller="Buy" asp-action="Index" class="btn btn-primary btn-lg me-2">Buy</a>
+    <a asp-controller="Rent" asp-action="Index" class="btn btn-outline-primary btn-lg">Rent</a>
+</div>
+@* 
+<section class="featured-listings mb-5">
+    <h2 class="mb-4">Featured Listings</h2>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <img src="~/images/property1.jpg" class="card-img-top" alt="Modern Apartment" />
+                <div class="card-body">
+                    <h5 class="card-title">Modern Apartment in City Center</h5>
+                    <p class="card-text">2 bed, 2 bath, 1200 sqft</p>
+                    <p class="card-text text-primary fw-bold">$250,000</p>
+                    <a href="#" class="btn btn-sm btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <img src="~/images/property2.jpg" class="card-img-top" alt="Cozy House" />
+                <div class="card-body">
+                    <h5 class="card-title">Cozy Family House</h5>
+                    <p class="card-text">4 bed, 3 bath, 2000 sqft</p>
+                    <p class="card-text text-primary fw-bold">$450,000</p>
+                    <a href="#" class="btn btn-sm btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <img src="~/images/property3.jpg" class="card-img-top" alt="Luxury Villa" />
+                <div class="card-body">
+                    <h5 class="card-title">Luxury Villa with Pool</h5>
+                    <p class="card-text">5 bed, 4 bath, 3500 sqft</p>
+                    <p class="card-text text-primary fw-bold">$1,200,000</p>
+                    <a href="#" class="btn btn-sm btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+ *@
+<section class="why-choose-us mb-5">
+    <h2 class="mb-4 text-center">Why Choose RealEstate?</h2>
+    <div class="row text-center">
+        <div class="col-md-4 mb-3">
+            <i class="bi bi-house-fill fs-1 text-primary"></i>
+            <h4 class="mt-2">Wide Selection</h4>
+            <p>Thousands of listings to find the perfect property.</p>
+        </div>
+        <div class="col-md-4 mb-3">
+            <i class="bi bi-person-check-fill fs-1 text-primary"></i>
+            <h4 class="mt-2">Trusted Agents</h4>
+            <p>Professional agents ready to assist you at every step.</p>
+        </div>
+        <div class="col-md-4 mb-3">
+            <i class="bi bi-shield-check fs-1 text-primary"></i>
+            <h4 class="mt-2">Secure Transactions</h4>
+            <p>Safe and reliable process for buying, renting, or selling.</p>
+        </div>
+    </div>
+</section>
 
+@* <section class="call-to-action text-center p-5 bg-primary text-white rounded">
+    <h2>Ready to Find Your Next Home?</h2>
+    <p>Contact us today and get expert assistance tailored just for you.</p>
+    <a asp-controller="Contact" asp-action="Index" class="btn btn-light btn-lg">Contact Us</a>
+</section> *@
