@@ -64,7 +64,7 @@ namespace RealEstate.Areas.Admin.Controllers
             await _userManager.RemoveFromRolesAsync(user, currentRoles);
             await _userManager.AddToRoleAsync(user, selectedRole);
 
-            TempData["Success"] = "User role updated.";
+            TempData["SuccessMessage"] = "User role updated successfully!";
             return RedirectToAction("Index");
         }
     }
