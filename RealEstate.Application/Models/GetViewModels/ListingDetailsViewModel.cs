@@ -17,6 +17,8 @@ namespace RealEstate.Application.Models.PostInputModels
 
         [DisplayName("Type")]
         public string? ListingType { get; set; }
+
+        public CustomerViewModel? CreatedByCustomer { get; set; }
         public List<string> Images { get; set; } = new List<string>();
     }
 }

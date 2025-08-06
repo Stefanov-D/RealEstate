@@ -197,14 +197,26 @@
 				}
 			</div>
 
-			<!-- EXTRA SECTION: ORDER 3 ON MOBILE -->
-			@if (User.Identity.IsAuthenticated && User.IsInRole("Admin") || User.IsInRole("Agent"))
+			@if (User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("Agent")))
 			{
 				<div class="section-box slide-in-bottom mt-2 order-3 order-lg-2">
-					<h5>Additional Details</h5>
-					<p>This section is for extra listing information such as agent contact, features, or documents.</p>
+					<h5>Customer Info</h5>
+
+					@if (Model.CreatedByCustomer != null)
+					{
+						<ul class="list-unstyled">
+							<li><strong>Name:</strong> @Model.CreatedByCustomer.FirstName @Model.CreatedByCustomer.LastName</li>
+							<li><strong>Email:</strong> @Model.CreatedByCustomer.Email</li>
+							<li><strong>Phone:</strong> @Model.CreatedByCustomer.PhoneNumber</li>
+						</ul>
+					}
+					else
+					{
+						<p class="text-muted">No customer info available.</p>
+					}
 				</div>
 			}
+
 
 		</div>
 
