@@ -36,7 +36,7 @@
                             <input type="hidden" name="UserId" value="@user.Id" />
                             <select class="form-select" name="SelectedRole">
                                 <option value="">Select role</option>
-                                <option value="User" selected="@user.Roles.Contains("User")">User</option>
+                                <option value="User" selected="@user.Roles.Contains("Customer")">Customer</option>
                                 <option value="Agent" selected="@user.Roles.Contains("Agent")">Agent</option>
                                 <option value="Admin" selected="@user.Roles.Contains("Admin")">Admin</option>
                             </select>
