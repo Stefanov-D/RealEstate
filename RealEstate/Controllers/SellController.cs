@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RealEstate.Application.Interfaces;
 using RealEstate.Application.Models.GetViewModels;
 
 namespace RealEstate.Controllers
 {
+    [Authorize(Roles = "Admin,Customer")]
     public class SellController : Controller
     {
         private readonly IListingService listingService;
