@@ -94,6 +94,21 @@ namespace RealEstate.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            [Required]
+            [MaxLength(255)]
+            [Display(Name = "First Name")]
+            public string FirstName { get; set; } = null!;
+
+            [Required]
+            [MaxLength(255)]
+            [Display(Name = "Last Name")]
+            public string LastName { get; set; } = null!;
+
+            [Required]
+            [MaxLength(20)]
+            [Display(Name = "Last Name")]
+            public string PhoneNumber { get; set; } = null!;
         }
 
 
