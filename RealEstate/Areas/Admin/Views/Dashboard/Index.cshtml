@@ -1,6 +1,50 @@
-﻿@{
-    ViewData["Title"] = "Admin Dashboard";
+﻿@model List<RealEstate.Application.Models.Admin.AdminUserViewModel>
+@{
+    ViewData["Title"] = "Admin Dashboard - User Role Management";
 }
 
-<h2>Welcome to the Admin Dashboard</h2>
-<p>Use the navigation to manage listings, users, and more.</p>
+<div class="container py-4">
+    <h2 class="mb-4">User Role Management</h2>
+
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>User</th>
+                <th>Email</th>
+                <th>Current Roles</th>
+                <th>Change Role</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.FullName</td>
+                    <td>@user.Email</td>
+                    <td>
+                        @if (user.Roles != null && user.Roles.Any())
+                        {
+                            @string.Join(", ", user.Roles)
+                        }
+                        else
+                        {
+                            <span class="text-muted">No Role</span>
+                        }
+                    </td>
+                    <td>
+                        <form asp-area="Admin" asp-controller="Dashboard" asp-action="UpdateUserRole" method="post" class="d-flex align-items-center gap-2">
+                            <input type="hidden" name="UserId" value="@user.Id" />
+                            <select class="form-select" name="SelectedRole">
+                                <option value="">Select role</option>
+                                <option value="User" selected="@user.Roles.Contains("User")">User</option>
+                                <option value="Agent" selected="@user.Roles.Contains("Agent")">Agent</option>
+                                <option value="Admin" selected="@user.Roles.Contains("Admin")">Admin</option>
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

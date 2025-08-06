@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RealEstate.Application.Models.Admin
+﻿namespace RealEstate.Application.Models.Admin
 {
-    internal class AdminUserViewModel
+    public class AdminUserViewModel
     {
+        public string Id { get; set; } = null!;
+        public string Email { get; set; } = null!;
+        public string FullName { get; set; } = null!;
+        public List<string> Roles { get; set; } = new();
     }
 }
